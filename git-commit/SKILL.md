@@ -30,9 +30,9 @@ description: Generates human-readable commit messages with leading emoji by anal
 | Bug fix            | 🐛    | 🐛 Fix date timezone       |
 | Documentation      | 📝    | 📝 Update API readme       |
 | Style / format     | 💄    | 💄 Format with prettier    |
-| Refactor           | ♻️    | ♻️ Extract auth helper    |
-| Performance        | ⚡    | ⚡ Lazy load images       |
-| Dependencies       | 📦    | 📦 Upgrade React to 19    |
-| Config / tooling   | 🔧    | 🔧 Add ESLint rule        |
+| Refactor           | ♻️    | ♻️ Extract auth helper     |
+| Performance        | ⚡    | ⚡ Lazy load images          |
+| Dependencies       | 📦    | 📦 Upgrade React to 19     |
+| Config / tooling   | 🔧    | 🔧 Add ESLint rule         |
 
 Pick the closest type; keep the message concise.
