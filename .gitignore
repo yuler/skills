@@ -1,0 +1,17 @@
+# Mac
+.DS_Store
+
+# Node.js
+node_modules
+dist
+
+# Editor
+.idea
+
+# Logs
+*.log
+*.logs
+
+# Envs
+.env
+.env.*.local

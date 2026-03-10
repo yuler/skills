@@ -11,3 +11,8 @@ npx skill add yuler/skills
 | Skill Name   | Description                                                                        |
 |--------------|------------------------------------------------------------------------------------|
 | git-commit   | Generates human-readable commit messages with leading emoji by analyzing git diff. |
+
+## Refs
+
+- [mitsuhiko/agent-stuff](https://github.com/mitsuhiko/agent-stuff)
+- [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills)

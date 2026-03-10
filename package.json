@@ -1,0 +1,10 @@
+{
+  "name": "skills",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Agent skills for my daily use.",
+  "scripts": {
+    "install:global": "npx skills add -g ./skills"
+  }
+}
+ 
