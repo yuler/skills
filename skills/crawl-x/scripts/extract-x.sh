@@ -9,13 +9,13 @@ fi
 
 POST_URL="$1"
 
-if [[ ! "$POST_URL" =~ ^https?://(x|twitter)\.com/[^/]+/status/[0-9]+ ]]; then
-  echo "Error: expected an X/Twitter status URL." >&2
+if [[ "$POST_URL" =~ ^https?://(x|twitter)\.com/([^/]+)/status/([0-9]+) ]]; then
+  USERNAME="${BASH_REMATCH[2]}"
+  STATUS_ID="${BASH_REMATCH[3]}"
+else
+  echo "Error: expected a valid X/Twitter status URL." >&2
   exit 1
 fi
-
-STATUS_ID="$(echo "$POST_URL" | sed -E 's#.*status/([0-9]+).*#\1#')"
-USERNAME="$(echo "$POST_URL" | sed -E 's#https?://(x|twitter)\.com/([^/]+)/status/.*#\2#')"
 JSON_FILE="$(mktemp)"
 OUTPUT_FILE="$(mktemp)"
 
