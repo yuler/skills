@@ -185,7 +185,7 @@ send() {
     exit 0
 }
 
-# Parse Opitons
+# Parse Options
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
