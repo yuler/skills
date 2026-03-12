@@ -51,7 +51,7 @@ check_accessibility() {
 }
 
 check_wechat() {
- if ! pgrep -x "WeChat" > /dev/null; then
+ if ! pgrep -x "WeChat" >/dev/null 2>&1; then
  echo "❌ WeChat is not running"
  echo "Please open WeChat first"
  exit 1
