@@ -1,35 +1,67 @@
 ---
 name: system-macro
-description: Automate desktop operations via keyboard/mouse simulation and macros on Linux and macOS. Current support wechat-app send message
+description: Automate desktop applications on Linux and macOS through keyboard or mouse simulation. Current supported workflow: send a WeChat message or file with `scripts/app-wechat.sh`. Use when the user wants the agent to send a WeChat message from the local desktop or automate an existing WeChat app session.
 ---
 
 # System Macro
 
-Simulate keyboard/mouse input and automate desktop application operations on Linux and macOS.
+Use this skill only for real desktop-side automation with visible side effects.
+
+## Supported Workflow
+
+### `app-wechat`
+
+Send text and/or a file to a WeChat contact or group. WeChat must already be open and logged in.
+
+Prefer the dispatcher unless you are debugging a platform-specific problem:
+
+```bash
+scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
+```
+
+## Before Running
+
+- Confirm the exact `receiver`, `message`, and optional `file` with the user.
+- Warn the user not to touch the keyboard or mouse until the macro finishes.
+- Verify WeChat is already running.
+- Stop if both `message` and `file` are empty.
+- Use the platform-specific script only when the dispatcher is not appropriate.
 
 ## Platform Requirements
 
-- **Linux**: `xdotool`, `wmctrl`
-- **macOS**: `osascript` (built-in)
+- Linux: `xdotool`, `wmctrl`, and clipboard support via `xclip` or `xsel`
+- macOS: `osascript` (built-in)
 
-## app-wechat
+## Behavior
 
-Send a message to a WeChat contact or group via keyboard simulation. WeChat must be running.
+- If the message is **longer than 500 words**, the script writes the content to a temporary file and **sends the file** instead of pasting text.
+- Otherwise, it sends a trimmed text message.
+- If `-f` is provided, the file is sent before the text message.
+- The dispatcher auto-detects Linux vs macOS.
+- Both platform scripts show a confirmation dialog before sending.
 
-**Linux:**
+## Platform Scripts
 
-```bash
-scripts/app-wechat.linux.sh -r "<receiver>" -m "<message>" -f "<file-path>"
-```
+- Linux: `scripts/app-wechat.linux.sh` …
+- macOS: `scripts/app-wechat.mac.sh` …
 
-**macOS:**
+## Arguments
 
-```bash
-scripts/app-wechat.mac.sh -r "<receiver>" -m "<message>" -f "<file-path>"
-```
-
-Options:
-
-- `-r, --receiver` — Contact or group name (default: `#dev`)
-- `-m, --message` — Message text (default: `test message`)
+- `-r, --receiver` — Contact or group name
+- `-m, --message` — Message text
 - `-f, --file` — Path to a file to send (optional)
+- `-h, --help` — Show usage
+- `-v, --version` — Show version
+
+## Recommended Flow
+
+1. Collect the exact receiver, message, and optional file path.
+2. Tell the user the macro will take control of the desktop briefly.
+3. Run `scripts/app-wechat.sh` with quoted arguments.
+4. Report whether the command succeeded or failed.
+
+## Example
+
+```bash
+scripts/app-wechat.sh -r "#dev" -m "Build is green. Please review the latest changes."
+```
