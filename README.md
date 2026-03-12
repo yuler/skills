@@ -3,7 +3,7 @@
 This repo is a collection of agent skills for my daily use.
 
 ```bash
-npx skill add yuler/skills
+npx skills add yuler/skills
 ```
 
 ## Skills

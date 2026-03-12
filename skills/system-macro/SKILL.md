@@ -1,11 +1,11 @@
 ---
 name: system-macro
-description: Automate desktop applications on Linux and macOS through keyboard or mouse simulation. Current supported workflow: send a WeChat message or file with `scripts/app-wechat.sh`. Use when the user wants the agent to send a WeChat message from the local desktop or automate an existing WeChat app session.
+description: Automate desktop operations via keyboard/mouse simulation and macros on Linux and macOS. Current support wechat-app send message
 ---
 
 # System Macro
 
-Use this skill only for real desktop-side automation with visible side effects.
+Simulate keyboard/mouse input and automate desktop application operations on Linux and macOS.
 
 ## Supported Workflow
 
