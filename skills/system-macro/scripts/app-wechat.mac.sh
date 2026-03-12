@@ -1,175 +1,118 @@
 #!/bin/bash
 
+# OpenClaw Skill: system-macro - WeChat macOS
+# Send WeChat messages via AppleScript GUI Automation on macOS
+# Requirements: Accessibility permission enabled
+
+set -e
+
 RECEIVER_NAME="#dev"
 MESSAGE="test message"
-FILE=""
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Help message
 usage() {
-    cat <<-EOF
+ cat <<-EOF
 Usage: $(basename "$0") [options]
 
-Example: $(basename "$0") -r "#dev" -m "test message" -f "~/Downloads/test.png"
+Send WeChat messages via AppleScript GUI automation on macOS.
+WeChat app must be running and Accessibility permission must be granted.
+
+Example: $(basename "$0") -r "#dev" -m "test message"
 
 Options:
-    -r, --receiver  Receiver name (default: #dev)
-    -m, --message   Message to send (default: test message)
-    -f, --file      Path to a file to send
-    -h, --help      Show this help message and exit
-    -v, --version   Show version information and exit
+ -r, --receiver Receiver name (default: #dev)
+ -m, --message Message to send (default: test message)
+ -h, --help Show this help message and exit
+ -v, --version Show version information and exit
+
+Requirements:
+ - macOS WeChat app must be running
+ - System Settings → Privacy & Security → Accessibility → Terminal/your terminal app
 EOF
-        exit
+ exit
 }
 
 version() {
-    echo "$(basename "$0") 0.1.0"
-    exit
+ echo "$(basename "$0") 0.2.0"
+ exit
 }
 
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
+check_accessibility() {
+ if ! osascript -e 'tell application "System Events" to get UI elements enabled' 2>/dev/null; then
+ echo "❌ Accessibility permission not enabled!"
+ echo ""
+ echo "Please enable:"
+ echo "  System Settings → Privacy & Security → Accessibility"
+ echo "  Then add: Terminal (or your terminal app)"
+ echo ""
+ exit 1
+ fi
 }
 
-check_dependencies() {
-    if ! command_exists osascript; then
-        echo "Error: osascript is required on macOS" >&2
-        exit 1
-    fi
-}
-
-check_wechat_running() {
-    if ! pgrep -x "WeChat" >/dev/null 2>&1; then
-        echo "WeChat is not running" >&2
-        exit 1
-    fi
-}
-
-confirm_dialog() {
-    osascript - "$RECEIVER_NAME" <<'APPLESCRIPT' >/dev/null
-on run argv
-    set receiverName to item 1 of argv
-    set msg to "I will send a message to " & receiverName & ". After continue, please don't interrupt me."
-    tell application "System Events"
-        activate
-        display dialog msg buttons {"Cancel", "Continue"} default button "Continue" with title "wechat-app"
-    end tell
-end run
-APPLESCRIPT
-}
-
-expand_path() {
-    local path="$1"
-    if [[ "$path" == ~* ]]; then
-        echo "${path/#\~/$HOME}"
-    else
-        echo "$path"
-    fi
-}
-
-check_arguments() {
-    if [[ -z "$RECEIVER_NAME" ]]; then
-        echo "Error: Receiver name is required" >&2
-        exit 1
-    fi
-    if [[ -z "$MESSAGE" && -z "$FILE" ]]; then
-        echo "Error: At least a message or a file is required" >&2
-        exit 1
-    fi
-    if [[ -n "$FILE" && ! -f "$FILE" ]]; then
-        echo "Error: File '$FILE' not found" >&2
-        exit 1
-    fi
+check_wechat() {
+ if ! pgrep -x "WeChat" > /dev/null; then
+ echo "❌ WeChat is not running"
+ echo "Please open WeChat first"
+ exit 1
+ fi
 }
 
 send_message() {
-    check_dependencies
-    check_wechat_running
-    check_arguments
+ check_wechat
+ check_accessibility
 
-    if ! confirm_dialog; then
-        echo "User cancelled, exiting"
-        exit 1
-    fi
+ # Append signature to message (one blank line before signature)
+ MESSAGE="${MESSAGE}
 
-    osascript - "$RECEIVER_NAME" "$MESSAGE" "$FILE" <<'APPLESCRIPT'
-on run argv
-    set receiverName to item 1 of argv
-    set messageText to item 2 of argv
-    set filePath to item 3 of argv
+-- 来自 jehan's openclaw"
 
-    tell application "WeChat" to activate
-    delay 1
+ echo "📤 Sending message to: $RECEIVER_NAME"
+ echo "📝 Message: $MESSAGE"
+ echo ""
 
-    tell application "System Events"
-        -- Focus "File Transfer" channel first, same as linux flow.
-        keystroke "f" using {command down}
-        delay 0.8
-        set the clipboard to "weixin"
-        keystroke "v" using {command down}
-        key code 36
-        delay 0.8
-
-        -- Search and open the receiver.
-        keystroke "f" using {command down}
-        delay 0.8
-        set the clipboard to receiverName
-        keystroke "v" using {command down}
-        key code 36
-        delay 1
-
-        -- Send file when provided.
-        if filePath is not "" then
-            set the clipboard to (POSIX file filePath)
-            keystroke "v" using {command down}
-            key code 36
-            delay 0.8
-        end if
-
-        -- Send message when provided.
-        if messageText is not "" then
-            set the clipboard to messageText
-            keystroke "v" using {command down}
-            key code 36
-        end if
-    end tell
-end run
-APPLESCRIPT
+ # Run AppleScript
+ osascript "$SCRIPT_DIR/app-wechat.mac.applescript" "$RECEIVER_NAME" "$MESSAGE"
+ 
+ local status=$?
+ if [ $status -eq 0 ]; then
+ echo ""
+ echo "✅ Message sent successfully!"
+ else
+ echo ""
+ echo "❌ Failed to send message (exit code: $status)"
+ echo "Make sure WeChat is unlocked and visible"
+ fi
+ 
+ return $status
 }
 
-# Parse Opitons
+# Parse Options
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
-    key="$1"
+ key="$1"
 
-    case $key in
-    -h | --help)
-        usage
-        ;;
-    -v | --version)
-        version
-        ;;
-    -r | --receiver)
-        RECEIVER_NAME="$2"
-        shift 2
-        ;;
-    -f | --file)
-        FILE="$2"
-        shift 2
-        ;;
-    -m | --message)
-        MESSAGE="$2"
-        shift 2
-        ;;
-    *)
-        echo "Unknown option: $1" >&2
-        usage
-        ;;
-    esac
+ case $key in
+ -h | --help)
+ usage
+ ;;
+ -v | --version)
+ version
+ ;;
+ -r | --receiver)
+ RECEIVER_NAME="$2"
+ shift 2
+ ;;
+ -m | --message)
+ MESSAGE="$2"
+ shift 2
+ ;;
+ *)
+ echo "Unknown option: $1" >&2
+ usage
+ ;;
+ esac
 done
-
-if [[ -n "$FILE" ]]; then
-    FILE="$(expand_path "$FILE")"
-fi
 
 # Main
 send_message
