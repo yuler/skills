@@ -7,7 +7,7 @@ description: Generate a concise, human-readable git commit message from the stag
 
 ## Workflow
 
-- Run `./scripts/git-diff.sh` to inspect the staged diff.
+- Run [git-diff](./scripts/git-diff.sh) to obtain the staged file changes.
 - Use the script output instead of raw `git diff` so common lock files are excluded.
 - If the script returns `No changes to commit`, report that there are no staged changes.
 - Generate one concise commit message that reflects the primary change.
