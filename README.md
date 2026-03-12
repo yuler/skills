@@ -8,9 +8,10 @@ npx skill add yuler/skills
 
 ## Skills
 
-| Skill Name   | Description                                                                        |
-|--------------|------------------------------------------------------------------------------------|
-| git-commit   | Generates human-readable commit messages with leading emoji by analyzing git diff. |
+| Skill Name    | Description                                                                        |
+|---------------|------------------------------------------------------------------------------------|
+| git-commit    | Generates human-readable commit messages with leading emoji by analyzing git diff  |
+| system-macro  | Automate desktop operations via keyboard/mouse simulation and macros (Linux/macOS) |
 
 ## Refs
 
