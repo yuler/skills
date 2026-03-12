@@ -149,15 +149,17 @@ send() {
     # Hack: focus "File Transfer" channel
     sleep 1
     xdotool key --clearmodifiers "ctrl+f"
-    sleep 1
+    sleep 0.5
     type_text_through_clipboard "weixin"
+    sleep 0.5
     xdotool key --clearmodifiers "Return"
     
     # Find the receiver
     sleep 1
     xdotool key --clearmodifiers "ctrl+f"
-    sleep 1
+    sleep 0.5
     type_text_through_clipboard "$RECEIVER_NAME"
+    sleep 0.5
     xdotool key --clearmodifiers "Return"
 
     # Send file
