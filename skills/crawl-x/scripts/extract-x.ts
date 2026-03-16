@@ -95,8 +95,8 @@ function main(): void {
   const mediaLines = mediaItems
     .filter((item) => item?.url)
     .map((item) => {
-      const type = item.type || "media";
-      return `- ${type.charAt(0).toUpperCase() + type.slice(1)}: ${item.url}`;
+      const kind = String(item.type || "media").replace(/^./, (s) => s.toUpperCase());
+      return `- ${kind}: ${item.url}`;
     });
 
   const safeName = title.replace(/[\\/:*?"<>|]+/g, "-").replace(/^[.\s]+|[.\s]+$/g, "");
