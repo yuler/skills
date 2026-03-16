@@ -1,11 +1,13 @@
 {
-  "name": "skills",
+  "name": "yuler-skills",
   "version": "0.0.0",
   "private": true,
   "description": "Agent skills for my daily use.",
   "scripts": {
     "commit": "git add --all && opencode run /git-commit",
     "install:global": "npx skills add -g ./skills"
+  },
+  "devDependencies": {
+    "skills": "^1.4.5"
   }
 }
- 
