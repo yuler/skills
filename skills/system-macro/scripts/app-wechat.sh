@@ -11,17 +11,20 @@ OS="$(uname -s)"
 RECEIVER_NAME=""
 MESSAGE=""
 FILE=""
+WITH_CONFIRM_DIALOG=0
 
 usage() {
     cat <<-EOF
 Usage: $(basename "$0") [options]
 
-Example: $(basename "$0") -r "#dev" -m "test message" -f "~/Downloads/test.png"
+Example: $(basename "$0") -r "#dev" -m "test message" -f "~/Downloads/test.png" -c # Show confirmation dialog
 
 Options:
     -r, --receiver  Receiver name
     -m, --message   Message to send
     -f, --file      Path to a file to send
+    -c, --with-confirm-dialog    Show confirmation dialog before sending
+    -C, --without-confirm-dialog Skip confirmation dialog before sending (default)
     -h, --help      Show this help message and exit
     -v, --version   Show version information and exit
 EOF
@@ -129,6 +132,14 @@ parse_options() {
             MESSAGE="$2"
             shift 2
             ;;
+        -c | --with-confirm-dialog)
+            WITH_CONFIRM_DIALOG=1
+            shift
+            ;;
+        -C | --without-confirm-dialog)
+            WITH_CONFIRM_DIALOG=0
+            shift
+            ;;
         *)
             echo "Unknown option: $1" >&2
             usage
@@ -142,9 +153,11 @@ send() {
     platform_check_dependencies
     platform_check_wechat_running
 
-    if ! platform_confirm_dialog "$RECEIVER_NAME"; then
-        echo "User cancelled, exiting"
-        exit 1
+    if [[ "$WITH_CONFIRM_DIALOG" -eq 1 ]]; then
+        if ! platform_confirm_dialog "$RECEIVER_NAME"; then
+            echo "User cancelled, exiting"
+            exit 1
+        fi
     fi
 
     platform_focus_wechat

@@ -6,4 +6,19 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      skills:
+        specifier: ^1.4.5
+        version: 1.4.5
+
+packages:
+
+  skills@1.4.5:
+    resolution: {integrity: sha512-fu73BeQ7dXDXx5/xViL7SOlSLamJAMlSLcyjoVTUGHCoQX5ekWrRVp0Go8OJqgzakUCIKqz8UijkDLBG9c/qOg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+snapshots:
+
+  skills@1.4.5: {}

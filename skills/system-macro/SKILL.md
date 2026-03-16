@@ -38,7 +38,8 @@ scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
 - Otherwise, it sends a trimmed text message.
 - If `-f` is provided, the file is sent before the text message.
 - The dispatcher auto-detects Linux vs macOS.
-- Both platform scripts show a confirmation dialog before sending.
+- By default, a confirmation dialog appears before sending.
+- Use `-c` or `--with-confirm-dialog` to show the confirmation dialog.
 
 ## Platform Scripts
 
@@ -50,6 +51,8 @@ scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
 - `-r, --receiver` — Contact or group name
 - `-m, --message` — Message text
 - `-f, --file` — Path to a file to send (optional)
+- `-c, --with-confirm-dialog` — Show confirmation dialog before sending
+- `-C, --without-confirm-dialog` — Skip confirmation dialog before sending (default)
 - `-h, --help` — Show usage
 - `-v, --version` — Show version
 
@@ -64,4 +67,10 @@ scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
 
 ```bash
 scripts/app-wechat.sh -r "#dev" -m "Build is green. Please review the latest changes."
+```
+
+With confirmation (automation mode):
+
+```bash
+scripts/app-wechat.sh -r "#dev" -m "Nightly deploy completed." -c
 ```
