@@ -71,8 +71,8 @@ platform_send_file() {
     osascript - "$file_path" <<'APPLESCRIPT' >/dev/null
 on run argv
     set filePath to item 1 of argv
+    set the clipboard to (POSIX file filePath)
     tell application "System Events"
-        set the clipboard to (POSIX file filePath)
         keystroke "v" using {command down}
         delay 0.8
         keystroke return
