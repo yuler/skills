@@ -42,10 +42,10 @@ platform_expand_path() {
 }
 
 platform_focus_wechat() {
-    osascript <<'APPLESCRIPT' >/dev/null
-tell application "WeChat" to activate
-delay 1
-APPLESCRIPT
+    open '/Applications/WeChat.app' >/dev/null 2>&1 || {
+        echo "Failed to launch WeChat" >&2
+        return 1
+    }
 }
 
 platform_search_chat() {
@@ -58,7 +58,8 @@ on run argv
         delay 0.8
         set the clipboard to chatName
         keystroke "v" using {command down}
-        key code 36
+        delay 0.8
+        keystroke return
         delay 1
     end tell
 end run
@@ -73,8 +74,9 @@ on run argv
     tell application "System Events"
         set the clipboard to (POSIX file filePath)
         keystroke "v" using {command down}
-        key code 36
         delay 0.8
+        keystroke return
+        delay 1
     end tell
 end run
 APPLESCRIPT
@@ -88,7 +90,9 @@ on run argv
     tell application "System Events"
         set the clipboard to messageText
         keystroke "v" using {command down}
-        key code 36
+        delay 0.8
+        keystroke return
+        delay 1
     end tell
 end run
 APPLESCRIPT
