@@ -1,0 +1,12 @@
+{
+  "prompt": [
+    "- Add [scope] to the commit message for what directory the change is in.",
+    "- By default, write a single concise sentence in present tense and active voice.",
+    "- Focus on the main change, not every small detail.",
+    "- Keep the subject line concise (typically <= 72 chars)."
+  ],
+  "hooks": {
+    "pre": "",
+    "post": ""
+  }
+}

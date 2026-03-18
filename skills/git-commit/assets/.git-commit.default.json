@@ -1,0 +1,7 @@
+{
+  "emoji": true,
+  "hooks": {
+    "pre": "echo \"Running pre-commit hooks...\"",
+    "post": "echo \"Running post-commit hooks...\""
+  }
+}
