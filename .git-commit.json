@@ -11,7 +11,7 @@
     "- Avoid ending the subject line with a period."
   ],
   "hooks": {
-    "pre": "GIT_COMMIT_START=\"$(date +%s%3N)\"",
-    "post": "GIT_COMMIT_START=\"$(date +%s%3N)\"; echo -e \"\\n\\n\"; echo \"[skills/git-commit] $(( (GIT_COMMIT_END - GIT_COMMIT_START) / 1000 ))s\"; unset GIT_COMMIT_START;"
+    "pre": "GIT_COMMIT_TIME_START=\"$(date +%s%3N)\"",
+    "post": "GIT_COMMIT_TIME_END=\"$(date +%s%3N)\"; echo -e \"\\n\\n\"; echo \"[skills/git-commit] $(( (GIT_COMMIT_TIME_END - GIT_COMMIT_TIME_START) / 1000 ))s\"; unset GIT_COMMIT_TIME_START; unset GIT_COMMIT_TIME_END;"
   }
 }
