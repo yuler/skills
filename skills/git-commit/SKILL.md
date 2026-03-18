@@ -70,6 +70,7 @@ This skill supports a JSON config file named `.git-commit.json` at two levels:
 
 After load, the helper script exports:
 
+- `GIT_COMMIT_DEBUG`: `true` / `false`
 - `GIT_COMMIT_EMOJI`: `true` / `false`
 - `GIT_COMMIT_PROMPT`: custom commit-message rules text (replaces this file's default rules when non-empty)
 - `GIT_COMMIT_HOOK_PRE`: pre hook string (script path or inline shell)
@@ -79,6 +80,7 @@ After load, the helper script exports:
 
 ```json
 {
+  "debug": false,
   "emoji": true,
   "prompt": [
     "Write imperative commit subject under 60 chars.",
@@ -91,6 +93,7 @@ After load, the helper script exports:
 }
 ```
 
+- `debug` (boolean, optional): default `false`. Enable verbose debug logging.
 - `emoji` (boolean, optional): default `true`.
 - `prompt` (string or string[], optional): custom rules text to replace default `SKILL.md` commit rules. Arrays are joined with newlines.
 - `hooks.pre` (string, optional): pre hook, either:
@@ -100,7 +103,7 @@ After load, the helper script exports:
 
 ## Debugging
 
-Set `GIT_COMMIT_DEBUG=true` to enable verbose logging from the config and hooks scripts. Debug output is written to stderr with `[...:debug]` prefixes and includes:
+Set `"debug": true` in `.git-commit.json` or `GIT_COMMIT_DEBUG=true` as an env var to enable verbose logging. Debug output is written to stderr with `[...:debug]` prefixes and includes:
 
 - Config file discovery and parse results
 - Merged and normalized JSON

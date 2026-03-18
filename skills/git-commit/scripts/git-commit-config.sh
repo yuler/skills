@@ -54,9 +54,9 @@ load_config() {
   repo_json="$(read_json_object "$repo_config")"
 
   if [[ -n "$repo_config" ]]; then
-    log "Loading config: global=$GLOBAL_CONFIG, repo=$repo_config"
+    debug "Loading config: global=$GLOBAL_CONFIG, repo=$repo_config"
   else
-    log "Loading config: global=$GLOBAL_CONFIG, repo=<none>"
+    debug "Loading config: global=$GLOBAL_CONFIG, repo=<none>"
   fi
 
   debug "Git root: ${GIT_ROOT:-<not found>}"
@@ -74,6 +74,9 @@ load_config() {
   # - hooks.pre / hooks.post
   EFFECTIVE_JSON="$(echo "$merged" | jq '
     {
+      debug: (
+        if (.debug | type) == "boolean" then .debug else false end
+      ),
       emoji: (
         if (.emoji | type) == "boolean" then .emoji else true end
       ),
@@ -95,25 +98,35 @@ load_config() {
     }
   ')"
 
+  # Activate debug mode from config when not already set via env var.
+  if [[ "${GIT_COMMIT_DEBUG:-}" != "true" ]]; then
+    local cfg_debug
+    cfg_debug="$(echo "$EFFECTIVE_JSON" | jq -r '.debug')"
+    [[ "$cfg_debug" == "true" ]] && GIT_COMMIT_DEBUG="true"
+  fi
+
   debug "Effective config: $EFFECTIVE_JSON"
-  log "Config loaded successfully"
+  debug "Config loaded successfully"
 }
 
 print_exports() {
   load_config "${1:-.}"
 
-  local emoji prompt hook_pre hook_post
+  local debug_val emoji prompt hook_pre hook_post
+  debug_val="${GIT_COMMIT_DEBUG:-false}"
   emoji="$(echo "$EFFECTIVE_JSON" | jq -r '.emoji')"
   prompt="$(echo "$EFFECTIVE_JSON" | jq -r '.prompt')"
   hook_pre="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre')"
   hook_post="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost')"
 
   debug "Exporting env vars:"
+  debug "  GIT_COMMIT_DEBUG=$debug_val"
   debug "  GIT_COMMIT_EMOJI=$emoji"
   debug "  GIT_COMMIT_PROMPT=$prompt"
   debug "  GIT_COMMIT_HOOK_PRE=$hook_pre"
   debug "  GIT_COMMIT_HOOK_POST=$hook_post"
 
+  printf 'export GIT_COMMIT_DEBUG=%q\n' "$debug_val"
   printf 'export GIT_COMMIT_EMOJI=%q\n' "$emoji"
   printf 'export GIT_COMMIT_PROMPT=%q\n' "$prompt"
   printf 'export GIT_COMMIT_HOOK_PRE=%q\n' "$hook_pre"
