@@ -4,8 +4,6 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOOKS_SCRIPT="$SCRIPT_DIR/git-commit-hooks.sh"
 GLOBAL_CONFIG="$HOME/.git-commit.json"
 EFFECTIVE_JSON="{}"
 GIT_ROOT=""
@@ -133,36 +131,6 @@ print_exports() {
   printf 'export GIT_COMMIT_HOOK_POST=%q\n' "$hook_post"
 }
 
-run_hook() {
-  local stage="$1"
-  local cwd="${2:-.}"
-  load_config "$cwd"
-
-  local hook_value
-  if [[ "$stage" == "pre" ]]; then
-    hook_value="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre')"
-  else
-    hook_value="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost')"
-  fi
-
-  debug "Hook value for $stage: ${hook_value:-<empty>}"
-
-  if [[ ! -x "$HOOKS_SCRIPT" ]]; then
-    log "Hook runner not executable, using bash: $HOOKS_SCRIPT"
-  fi
-
-  local run_cwd="$cwd"
-  [[ -n "$GIT_ROOT" ]] && run_cwd="$GIT_ROOT"
-
-  debug "Hook runner script: $HOOKS_SCRIPT"
-  debug "Hook runner cwd: $run_cwd"
-  log "Dispatching $stage hook to hook runner"
-  GIT_COMMIT_DEBUG="${GIT_COMMIT_DEBUG:-}" \
-  GIT_COMMIT_HOOK_PRE="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre')" \
-  GIT_COMMIT_HOOK_POST="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost')" \
-  bash "$HOOKS_SCRIPT" "$stage" "$run_cwd"
-}
-
 print_json() {
   load_config "${1:-.}"
   log "Printing normalized config"
@@ -172,7 +140,6 @@ print_json() {
 usage() {
   echo "Usage: $0 export" >&2
   echo "       $0 print" >&2
-  echo "       $0 run-hook <pre|post>" >&2
   exit 1
 }
 
@@ -183,11 +150,6 @@ case "${1:-export}" in
     ;;
   print)
     print_json "."
-    ;;
-  run-hook)
-    stage="${2:-}"
-    [[ "$stage" != "pre" && "$stage" != "post" ]] && usage
-    run_hook "$stage" "."
     ;;
   *)
     usage
