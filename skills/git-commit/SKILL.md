@@ -50,24 +50,83 @@ If `GIT_COMMIT_PROMPT` does not exist or is empty, use the default rules below:
 
 Use these common mappings when `GIT_COMMIT_EMOJI=true`:
 
-| Change type                | Emoji | Example                         |
-|---------------------------|-------|---------------------------------|
-| New feature               | ✨    | ✨ Add login form               |
-| Bug fix                   | 🐛    | 🐛 Fix date timezone parsing    |
-| Critical hotfix           | 🚑️   | 🚑️ Patch production auth crash |
-| Documentation             | 📝    | 📝 Update API usage docs        |
-| Code format / structure   | 🎨    | 🎨 Reformat linted modules      |
-| UI style updates          | 💄    | 💄 Refresh button styles        |
-| Refactor                  | ♻️    | ♻️ Extract auth token helper    |
-| Performance               | ⚡️   | ⚡️ Reduce image decode cost     |
-| Add dependency            | ➕    | ➕ Add zod for schema checks     |
-| Remove dependency         | ➖    | ➖ Remove unused lodash          |
-| Upgrade dependencies      | ⬆️   | ⬆️ Upgrade React to 19          |
-| Downgrade dependencies    | ⬇️   | ⬇️ Downgrade Vite for stability |
-| Configuration files       | 🔧    | 🔧 Add ESLint rule              |
-| Dev scripts / tooling     | 🔨    | 🔨 Add pre-commit script        |
-| Tests                     | ✅    | ✅ Add unit tests for parser    |
-| CI build                  | 💚    | 💚 Fix flaky CI node setup      |
+| Change type                                                  | Emoji | Example                                    |
+| :----------------------------------------------------------- | :---: | :----------------------------------------- |
+| Improve structure / format of the code                       |   🎨   | 🎨 Reformat commit message helper           |
+| Improve performance                                          |   ⚡️   | ⚡️ Speed up staged diff parsing             |
+| Remove code or files                                         |   🔥   | 🔥 Remove unused commit hook script         |
+| Fix a bug                                                    |   🐛   | 🐛 Fix emoji selection for docs commits     |
+| Critical hotfix                                              |   🚑️   | 🚑️ Patch broken commit message generator    |
+| Introduce new features                                       |   ✨   | ✨ Add configurable emoji mappings          |
+| Add or update documentation                                  |   📝   | 📝 Document `.git-commit.json` precedence   |
+| Deploy stuff                                                 |   🚀   | 🚀 Deploy updated commit hooks              |
+| Add or update the UI and style files                         |   💄   | 💄 Refresh CLI prompt styling               |
+| Begin a project                                              |   🎉   | 🎉 Initialize git-commit skill scaffolding  |
+| Add, update, or pass tests                                   |   ✅   | ✅ Add tests for commit message formatting  |
+| Fix security or privacy issues                               |   🔒️   | 🔒️ Fix unsafe shell quoting in hooks        |
+| Add or update secrets                                        |   🔐   | 🔐 Add example secret injection workflow    |
+| Release / Version tags                                       |   🔖   | 🔖 Tag v1.2.0                               |
+| Fix compiler / linter warnings                               |   🚨   | 🚨 Fix markdown lint for handbook table     |
+| Work in progress                                             |   🚧   | 🚧 WIP refine emoji heuristics              |
+| Fix CI Build                                                 |   💚   | 💚 Fix CI failing on missing bash           |
+| Downgrade dependencies                                       |   ⬇️   | ⬇️ Downgrade node for compatibility         |
+| Upgrade dependencies                                         |   ⬆️   | ⬆️ Upgrade dev dependencies                 |
+| Pin dependencies to specific versions                        |   📌   | 📌 Pin prettier to 3.3.0                    |
+| Add or update CI build system                                |   👷   | 👷 Add GitHub Actions workflow              |
+| Add or update analytics or track code                        |   📈   | 📈 Add commit metrics tracking              |
+| Refactor code                                                |   ♻️   | ♻️ Extract emoji resolver                   |
+| Add a dependency                                             |   ➕   | ➕ Add `chalk` for terminal colors          |
+| Remove a dependency                                          |   ➖   | ➖ Remove unused `lodash`                   |
+| Add or update configuration files                            |   🔧   | 🔧 Add repo `.git-commit.json`              |
+| Add or update development scripts                            |   🔨   | 🔨 Add `scripts/git-diff.sh` helper         |
+| Internationalization and localization                        |   🌐   | 🌐 Add i18n-ready commit templates          |
+| Fix typos                                                    |   ✏️   | ✏️ Fix handbook wording                     |
+| Write bad code that needs to be improved                     |   💩   | 💩 Add naive parser (to refactor later)     |
+| Revert changes                                               |   ⏪️   | ⏪️ Revert emoji handbook update             |
+| Merge branches                                               |   🔀   | 🔀 Merge main into feature branch           |
+| Add or update compiled files or packages                     |   📦️   | 📦️ Update bundled release artifacts         |
+| Update code due to external API changes                      |   👽️   | 👽️ Adapt to new `gh` output format          |
+| Move or rename resources (e.g.: files, paths, routes)        |   🚚   | 🚚 Move hooks into `scripts/`               |
+| Add or update license                                        |   📄   | 📄 Add MIT license                          |
+| Introduce breaking changes                                   |   💥   | 💥 Change config schema for hooks           |
+| Add or update assets                                         |   🍱   | 🍱 Add logo assets for docs                 |
+| Improve accessibility                                        |   ♿️   | ♿️ Improve CLI color contrast               |
+| Add or update comments in source code                        |   💡   | 💡 Clarify semver rules in prompt           |
+| Write code drunkenly                                         |   🍻   | 🍻 Spike experimental commit generator      |
+| Add or update text and literals                              |   💬   | 💬 Update default commit prompt             |
+| Perform database related changes                             |   🗃️   | 🗃️ Add migrations for commit metadata store |
+| Add or update logs                                           |   🔊   | 🔊 Add debug logging for emoji selection    |
+| Remove logs                                                  |   🔇   | 🔇 Remove noisy debug output                |
+| Add or update contributor(s)                                 |   👥   | 👥 Add new contributor to AUTHORS           |
+| Improve user experience / usability                          |   🚸   | 🚸 Simplify interactive commit flow         |
+| Make architectural changes                                   |   🏗️   | 🏗️ Restructure skills layout                |
+| Work on responsive design                                    |   📱   | 📱 Improve mobile docs layout               |
+| Mock things                                                  |   🤡   | 🤡 Mock git output in tests                 |
+| Add or update an easter egg                                  |   🥚   | 🥚 Add hidden “gitmoji” command             |
+| Add or update a .gitignore file                              |   🙈   | 🙈 Add `.env` to `.gitignore`               |
+| Add or update snapshots                                      |   📸   | 📸 Update snapshot tests                    |
+| Perform experiments                                          |   ⚗️   | ⚗️ Experiment with new commit heuristics    |
+| Improve SEO                                                  |   🔍️   | 🔍️ Improve docs meta tags                   |
+| Add or update types                                          |   🏷️   | 🏷️ Add TypeScript types for config          |
+| Add or update seed files                                     |   🌱   | 🌱 Add seed config examples                 |
+| Add, update, or remove feature flags                         |   🚩   | 🚩 Add flag to disable emojis               |
+| Catch errors                                                 |   🥅   | 🥅 Add error handling for missing repo      |
+| Add or update animations and transitions                     |   💫   | 💫 Add subtle UI transitions                |
+| Deprecate code that needs to be cleaned up                   |   🗑️   | 🗑️ Deprecate legacy config loader           |
+| Work on code related to authorization, roles and permissions |   🛂   | 🛂 Restrict hook execution permissions      |
+| Simple fix for a non-critical issue                          |   🩹   | 🩹 Fix minor wording in output              |
+| Data exploration/inspection                                  |   🧐   | 🧐 Inspect commit history patterns          |
+| Remove dead code                                             |   ⚰️   | ⚰️ Remove unused helper functions           |
+| Add a failing test                                           |   🧪   | 🧪 Add failing test for edge case           |
+| Add or update business logic                                 |   👔   | 👔 Update commit classification logic       |
+| Add or update healthcheck                                    |   🩺   | 🩺 Add healthcheck for git availability     |
+| Infrastructure related changes                               |   🧱   | 🧱 Update CI runner setup                   |
+| Improve developer experience                                 |   🧑‍💻   | 🧑‍💻 Add better local debug output            |
+| Add sponsorships or money related infrastructure             |   💸   | 💸 Add funding metadata                     |
+| Add or update code related to multithreading or concurrency  |   🧵   | 🧵 Parallelize diff processing              |
+| Add or update code related to validation                     |   🦺   | 🦺 Validate `.git-commit.json` schema       |
+| Improve offline support                                      |   ✈️   | ✈️ Cache gitmoji mappings locally           |
+| Code that adds backwards compatibility                       |   🦖   | 🦖 Support legacy config keys               |
 
 Prefer the closest semantic match from gitmoji. Keep the subject concise and focused on the primary change.
 
@@ -100,11 +159,7 @@ After load, the helper script exports:
     "Use imperative mood and active voice."
   ],
   "hooks": {
-    "pre": [
-      "echo \"Running checks...\"",
-      "npm run lint",
-      "npm test"
-    ],
+    "pre": ["echo \"Running checks...\"", "npm run lint", "npm test"],
     "post": "echo \"Committed: $(git rev-parse --short HEAD)\""
   }
 }
