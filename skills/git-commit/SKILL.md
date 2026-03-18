@@ -100,7 +100,11 @@ After load, the helper script exports:
     "Use imperative mood and active voice."
   ],
   "hooks": {
-    "pre": "./scripts/commit-pre.sh",
+    "pre": [
+      "echo \"Running checks...\"",
+      "npm run lint",
+      "npm test"
+    ],
     "post": "echo \"Committed: $(git rev-parse --short HEAD)\""
   }
 }
@@ -109,10 +113,11 @@ After load, the helper script exports:
 - `debug` (boolean, optional): default `false`. Enable verbose debug logging.
 - `emoji` (boolean, optional): default `true`.
 - `prompt` (string or string[], optional): custom rules text to replace default `SKILL.md` commit rules. Arrays are joined with newlines.
-- `hooks.pre` (string, optional): pre hook, either:
+- `hooks.pre` (string or string[], optional): pre hook, either:
   - path to a script file (relative to repo root, or absolute), or
   - inline shell content executed by `bash -lc`.
-- `hooks.post` (string, optional): post hook with the same behavior as `hooks.pre`.
+  - when provided as `string[]`, lines are joined with newlines into one multi-line shell command.
+- `hooks.post` (string or string[], optional): post hook with the same behavior as `hooks.pre`.
 
 Notes:
 

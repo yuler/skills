@@ -3,12 +3,18 @@
 
 set -euo pipefail
 
-log() {
-  echo "[git-commit-hooks] $*" >&2
+SCRIPT_TAG="git-commit-hooks"
+
+is_debug_enabled() {
+  [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]]
 }
 
 debug() {
-  [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]] && echo "[git-commit-hooks:debug] $*" >&2 || true
+  is_debug_enabled && echo "[$SCRIPT_TAG][DEBUG] $*" >&2 || true
+}
+
+info() {
+  echo "[$SCRIPT_TAG][INFO] $*" >&2
 }
 
 usage() {
@@ -42,38 +48,32 @@ run_hook() {
     hook_value="${GIT_COMMIT_HOOK_POST:-}"
   fi
 
-  debug "Stage: $stage, cwd: $cwd"
-  debug "GIT_COMMIT_HOOK_PRE=${GIT_COMMIT_HOOK_PRE:-<unset>}"
-  debug "GIT_COMMIT_HOOK_POST=${GIT_COMMIT_HOOK_POST:-<unset>}"
+  debug "Stage=$stage cwd=$cwd"
 
   if [[ -z "$hook_value" ]]; then
-    log "No $stage hook configured, skip."
+    debug "No $stage hook configured, skipping"
     return 0
   fi
-
-  debug "Resolved $stage hook value: $hook_value"
 
   local run_cwd="$cwd"
   local git_root
   git_root="$(get_git_root "$cwd")"
   [[ -n "$git_root" ]] && run_cwd="$git_root"
 
-  debug "Git root: ${git_root:-<not found>}, run cwd: $run_cwd"
+  debug "Resolved run cwd: ${run_cwd}"
 
   local maybe_path
   maybe_path="$(resolve_hook_path "$hook_value" "$run_cwd")"
-  debug "Resolved hook path: $maybe_path (exists=$([ -f "$maybe_path" ] && echo yes || echo no))"
+  debug "Resolved hook path: $maybe_path"
 
   if [[ -f "$maybe_path" ]]; then
-    log "Running $stage hook script: $maybe_path"
+    info "Running $stage hook script: $maybe_path"
     (cd "$run_cwd" && bash "$maybe_path")
   else
-    log "Running $stage inline hook in $run_cwd"
-    debug "Inline command: bash -lc \"$hook_value\""
+    info "Running $stage hook command in $run_cwd"
+    debug "Inline command: $hook_value"
     (cd "$run_cwd" && bash -lc "$hook_value")
   fi
-
-  log "$stage hook completed"
 }
 
 stage="${1:-}"

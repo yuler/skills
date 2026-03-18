@@ -7,13 +7,18 @@ set -euo pipefail
 GLOBAL_CONFIG="$HOME/.git-commit.json"
 EFFECTIVE_JSON="{}"
 GIT_ROOT=""
+SCRIPT_TAG="git-commit-config"
 
-log() {
-  echo "[git-commit-config] $*" >&2
+is_debug_enabled() {
+  [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]]
 }
 
 debug() {
-  [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]] && echo "[git-commit-config:debug] $*" >&2 || true
+  is_debug_enabled && echo "[$SCRIPT_TAG][DEBUG] $*" >&2 || true
+}
+
+warn() {
+  echo "[$SCRIPT_TAG][WARN] $*" >&2
 }
 
 get_git_root() {
@@ -24,19 +29,18 @@ get_git_root() {
 read_json_object() {
   local path="$1"
   if [[ ! -f "$path" ]]; then
-    debug "Config file not found, skipping: $path"
+    debug "Config not found: $path"
     echo "{}"
     return 0
   fi
 
-  debug "Reading config file: $path"
+  debug "Reading config: $path"
   local result
   if ! result="$(jq -c 'if type == "object" then . else {} end' "$path" 2>/dev/null)"; then
-    debug "Failed to parse JSON, using empty object: $path"
+    warn "Invalid JSON in $path, using defaults"
     echo "{}"
     return 0
   fi
-  debug "Parsed config: $result"
   echo "$result"
 }
 
@@ -51,21 +55,11 @@ load_config() {
   global_json="$(read_json_object "$GLOBAL_CONFIG")"
   repo_json="$(read_json_object "$repo_config")"
 
-  if [[ -n "$repo_config" ]]; then
-    debug "Loading config: global=$GLOBAL_CONFIG, repo=$repo_config"
-  else
-    debug "Loading config: global=$GLOBAL_CONFIG, repo=<none>"
-  fi
-
-  debug "Git root: ${GIT_ROOT:-<not found>}"
-  debug "Global JSON: $global_json"
-  debug "Repo JSON: $repo_json"
+  debug "Config sources: global=$GLOBAL_CONFIG repo=${repo_config:-<none>} git_root=${GIT_ROOT:-<none>}"
 
   # Repo config overrides global config.
   local merged
   merged="$(printf '%s\n%s\n' "$global_json" "$repo_json" | jq -s '.[0] * .[1]')"
-
-  debug "Merged JSON: $merged"
 
   # Normalize to current schema only:
   # - prompt (string or string[])
@@ -88,10 +82,22 @@ load_config() {
         end
       ),
       hookPre: (
-        if (.hooks.pre | type) == "string" then .hooks.pre else "" end
+        if (.hooks.pre | type) == "string" then
+          .hooks.pre
+        elif (.hooks.pre | type) == "array" then
+          ([.hooks.pre[] | select(type == "string")] | join("\n"))
+        else
+          ""
+        end
       ),
       hookPost: (
-        if (.hooks.post | type) == "string" then .hooks.post else "" end
+        if (.hooks.post | type) == "string" then
+          .hooks.post
+        elif (.hooks.post | type) == "array" then
+          ([.hooks.post[] | select(type == "string")] | join("\n"))
+        else
+          ""
+        end
       )
     }
   ')"
@@ -103,8 +109,7 @@ load_config() {
     [[ "$cfg_debug" == "true" ]] && GIT_COMMIT_DEBUG="true"
   fi
 
-  debug "Effective config: $EFFECTIVE_JSON"
-  debug "Config loaded successfully"
+  debug "Effective config loaded (emoji=$(echo "$EFFECTIVE_JSON" | jq -r '.emoji') prompt_len=$(echo "$EFFECTIVE_JSON" | jq -r '.prompt | length') pre_hook=$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre != ""') post_hook=$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost != ""'))"
 }
 
 print_exports() {
@@ -117,12 +122,7 @@ print_exports() {
   hook_pre="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre')"
   hook_post="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost')"
 
-  debug "Exporting env vars:"
-  debug "  GIT_COMMIT_DEBUG=$debug_val"
-  debug "  GIT_COMMIT_EMOJI=$emoji"
-  debug "  GIT_COMMIT_PROMPT=$prompt"
-  debug "  GIT_COMMIT_HOOK_PRE=$hook_pre"
-  debug "  GIT_COMMIT_HOOK_POST=$hook_post"
+  debug "Exporting env vars (emoji=$emoji prompt_len=${#prompt} pre_hook_set=$([[ -n "$hook_pre" ]] && echo true || echo false) post_hook_set=$([[ -n "$hook_post" ]] && echo true || echo false))"
 
   printf 'export GIT_COMMIT_DEBUG=%q\n' "$debug_val"
   printf 'export GIT_COMMIT_EMOJI=%q\n' "$emoji"
@@ -133,7 +133,6 @@ print_exports() {
 
 print_json() {
   load_config "${1:-.}"
-  log "Printing normalized config"
   echo "$EFFECTIVE_JSON"
 }
 

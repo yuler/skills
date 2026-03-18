@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_TAG="git-diff"
+
+warn() {
+  echo "[$SCRIPT_TAG][WARN] $*" >&2
+}
 
 LOCKFILES=(
     # Node.js: pnpm, npm, yarn, bun
@@ -34,7 +42,7 @@ diff=$(git diff --staged -- . "${exclude_args[@]}")
 
 # If don't have staged changes, exit
 if [[ -z "$diff" ]]; then
-    echo "No changes to commit"
+    warn "No staged changes to commit"
     exit 1
 fi
 
