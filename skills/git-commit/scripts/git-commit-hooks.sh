@@ -9,12 +9,12 @@ is_debug_enabled() {
   [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]]
 }
 
-debug() {
-  is_debug_enabled && echo "[$SCRIPT_TAG][DEBUG] $*" >&2 || true
+log() {
+  echo "[$SCRIPT_TAG:log] $*" >&2
 }
 
-info() {
-  echo "[$SCRIPT_TAG][INFO] $*" >&2
+debug() {
+  is_debug_enabled && echo "[$SCRIPT_TAG:debug] $*" >&2 || true
 }
 
 usage() {
@@ -48,10 +48,10 @@ run_hook() {
     hook_value="${GIT_COMMIT_HOOK_POST:-}"
   fi
 
-  debug "Stage=$stage cwd=$cwd"
+  debug "stage=$stage cwd=$cwd"
 
   if [[ -z "$hook_value" ]]; then
-    debug "No $stage hook configured, skipping"
+    debug "no $stage hook configured, skipping"
     return 0
   fi
 
@@ -60,18 +60,19 @@ run_hook() {
   git_root="$(get_git_root "$cwd")"
   [[ -n "$git_root" ]] && run_cwd="$git_root"
 
-  debug "Resolved run cwd: ${run_cwd}"
+  debug "resolved run cwd: ${run_cwd}"
 
   local maybe_path
   maybe_path="$(resolve_hook_path "$hook_value" "$run_cwd")"
-  debug "Resolved hook path: $maybe_path"
+  debug "resolved hook path: $maybe_path"
 
   if [[ -f "$maybe_path" ]]; then
-    info "Running $stage hook script: $maybe_path"
+    log "running $stage hook: $maybe_path"
+    debug "executing script file"
     (cd "$run_cwd" && bash "$maybe_path")
   else
-    info "Running $stage hook command in $run_cwd"
-    debug "Inline command: $hook_value"
+    log "running $stage hook (inline)"
+    debug "inline command: $hook_value"
     (cd "$run_cwd" && bash -lc "$hook_value")
   fi
 }

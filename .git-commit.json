@@ -1,5 +1,5 @@
 {
-  "debug": true,
+  "debug": false,
   "emoji": true,
   "prompt": [
     "> Use this commit format: `<$emoji> [$scope]: <$summary>`. ",

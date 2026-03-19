@@ -4,8 +4,16 @@ set -euo pipefail
 
 SCRIPT_TAG="git-diff"
 
-warn() {
-  echo "[$SCRIPT_TAG][WARN] $*" >&2
+is_debug_enabled() {
+  [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]]
+}
+
+log() {
+  echo "[$SCRIPT_TAG] $*" >&2
+}
+
+debug() {
+  is_debug_enabled && echo "[$SCRIPT_TAG:debug] $*" >&2 || true
 }
 
 LOCKFILES=(
@@ -31,20 +39,20 @@ LOCKFILES=(
     "Cargo.lock"
 )
 
-# Build exclude pathspecs (one per file)
 exclude_args=()
 for f in "${LOCKFILES[@]}"; do
     exclude_args+=(':(exclude)'"$f")
 done
 
-# Get the diff with exclusions
+debug "running git diff --staged with ${#exclude_args[@]} lockfile exclusions"
+
 diff=$(git diff --staged -- . "${exclude_args[@]}")
 
-# If don't have staged changes, exit
 if [[ -z "$diff" ]]; then
-    warn "No staged changes to commit"
+    log "no staged changes to commit"
     exit 1
 fi
 
-# Print the diff
+debug "staged diff: $(echo "$diff" | wc -l) lines"
+
 echo "$diff"

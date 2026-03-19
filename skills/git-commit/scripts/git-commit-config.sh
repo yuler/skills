@@ -9,16 +9,34 @@ EFFECTIVE_JSON="{}"
 GIT_ROOT=""
 SCRIPT_TAG="git-commit-config"
 
+DEFAULT_PROMPT='
+## Rules
+- If `GIT_COMMIT_EMOJI=true`, you **must** begin the commit subject line with an appropriate gitmoji
+(see table below) **followed by a space**; otherwise, do not include any emoji.
+- Write **one** concise commit subject line in **imperative mood** (e.g. "Add…", "Fix…", "Refactor…").
+- Focus on the primary change, not every small detail.
+- Keep the subject line concise (typically ≤ 72 chars).
+
+## Examples:
+
+With emoji (`GIT_COMMIT_EMOJI=true`):
+- `✨ Add support for custom commit templates`
+- `📝 Document usage in SKILL.md`
+
+Without emoji (`GIT_COMMIT_EMOJI=false`):
+- `Add support for custom commit templates`
+- `Document usage in SKILL.md`'
+
 is_debug_enabled() {
   [[ "${GIT_COMMIT_DEBUG:-}" == "true" ]]
 }
 
-debug() {
-  is_debug_enabled && echo "[$SCRIPT_TAG][DEBUG] $*" >&2 || true
+log() {
+  echo "[$SCRIPT_TAG:log] $*" >&2
 }
 
-warn() {
-  echo "[$SCRIPT_TAG][WARN] $*" >&2
+debug() {
+  is_debug_enabled && echo "[$SCRIPT_TAG:debug] $*" >&2 || true
 }
 
 get_git_root() {
@@ -29,15 +47,15 @@ get_git_root() {
 read_json_object() {
   local path="$1"
   if [[ ! -f "$path" ]]; then
-    debug "Config not found: $path"
+    debug "config not found: $path"
     echo "{}"
     return 0
   fi
 
-  debug "Reading config: $path"
+  debug "reading config: $path"
   local result
   if ! result="$(jq -c 'if type == "object" then . else {} end' "$path" 2>/dev/null)"; then
-    warn "Invalid JSON in $path, using defaults"
+    log "invalid JSON in $path, using defaults"
     echo "{}"
     return 0
   fi
@@ -55,15 +73,13 @@ load_config() {
   global_json="$(read_json_object "$GLOBAL_CONFIG")"
   repo_json="$(read_json_object "$repo_config")"
 
-  debug "Config sources: global=$GLOBAL_CONFIG repo=${repo_config:-<none>} git_root=${GIT_ROOT:-<none>}"
+  log "config: $GLOBAL_CONFIG ${repo_config:-<none>}"
+  debug "git_root=${GIT_ROOT:-<none>}"
 
-  # Repo config overrides global config.
   local merged
   merged="$(printf '%s\n%s\n' "$global_json" "$repo_json" | jq -s '.[0] * .[1]')"
+  debug "merged json: $merged"
 
-  # Normalize to current schema only:
-  # - prompt (string or string[])
-  # - hooks.pre / hooks.post
   EFFECTIVE_JSON="$(echo "$merged" | jq '
     {
       debug: (
@@ -109,7 +125,25 @@ load_config() {
     [[ "$cfg_debug" == "true" ]] && GIT_COMMIT_DEBUG="true"
   fi
 
-  debug "Effective config loaded (emoji=$(echo "$EFFECTIVE_JSON" | jq -r '.emoji') prompt_len=$(echo "$EFFECTIVE_JSON" | jq -r '.prompt | length') pre_hook=$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre != ""') post_hook=$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost != ""'))"
+  # Resolve prompt: CWD (repo) > GLOBAL > DEFAULT
+  local _extract_prompt='if (.prompt | type) == "string" then .prompt elif (.prompt | type) == "array" then ([.prompt[] | select(type == "string")] | join("\n")) else "" end'
+  local repo_prompt global_prompt final_prompt
+  repo_prompt="$(echo "$repo_json" | jq -r "$_extract_prompt")"
+  global_prompt="$(echo "$global_json" | jq -r "$_extract_prompt")"
+
+  if [[ -n "$repo_prompt" ]]; then
+    final_prompt="$repo_prompt"
+    debug "using CWD prompt (${#final_prompt} chars)"
+  elif [[ -n "$global_prompt" ]]; then
+    final_prompt="$global_prompt"
+    debug "using global prompt (${#final_prompt} chars)"
+  else
+    final_prompt="$DEFAULT_PROMPT"
+    debug "no custom prompt, using built-in default"
+  fi
+  EFFECTIVE_JSON="$(echo "$EFFECTIVE_JSON" | jq --arg p "$final_prompt" '.prompt = $p')"
+
+  debug "effective config: $(echo "$EFFECTIVE_JSON" | jq -c '{ emoji, prompt: ((.prompt[:20] + "…" + .prompt[-20:]) + " (" + (.prompt | length | tostring) + ")"), hookPre: (.hookPre != ""), hookPost: (.hookPost != "") }')"
 }
 
 print_exports() {
@@ -122,7 +156,7 @@ print_exports() {
   hook_pre="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPre')"
   hook_post="$(echo "$EFFECTIVE_JSON" | jq -r '.hookPost')"
 
-  debug "Exporting env vars (emoji=$emoji prompt_len=${#prompt} pre_hook_set=$([[ -n "$hook_pre" ]] && echo true || echo false) post_hook_set=$([[ -n "$hook_post" ]] && echo true || echo false))"
+  log "env: emoji=$emoji prompt=\"$prompt\" pre_hook=$([[ -n "$hook_pre" ]] && echo true || echo false) post_hook=$([[ -n "$hook_post" ]] && echo true || echo false)"
 
   printf 'export GIT_COMMIT_DEBUG=%q\n' "$debug_val"
   printf 'export GIT_COMMIT_EMOJI=%q\n' "$emoji"
