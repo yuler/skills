@@ -4,7 +4,7 @@
   "prompt": [
     "> Use this commit format: `<$emoji> [$scope]: <$summary>`. ",
     "Examples: `✨ [skills/git-commit]: Add git commit skill`",
-    "- `$scope` must reflect the affected files. Available scopes: [skills/<$name>], [others].",
+    "- `$scope` must reflect the affected files. Available scopes: [skills/<$name>] or [others], $name is skill folder name.",
     "- `$summary` should be a single, clear sentence in present tense and active voice.",
     "- Focus on the main change, not every small detail.",
     "- Keep the subject line brief (ideally 72 characters or less).",
