@@ -42,9 +42,22 @@ Use `GIT_COMMIT_PROMPT` when this environment variable exists and is not empty.
 
 If `GIT_COMMIT_PROMPT` does not exist or is empty, use the default rules below:
 
+```text
+- If `GIT_COMMIT_EMOJI=true`, you **must** begin the commit subject line with an appropriate gitmoji (see table below) **followed by a space**; otherwise, do not include any emoji.
 - Write **one** concise commit subject line in **imperative mood** (e.g. “Add…”, “Fix…”, “Refactor…”).
 - Focus on the primary change, not every small detail.
 - Keep the subject line concise (typically \( \le 72 \) chars).
+
+Example commit messages:
+
+With emoji (`GIT_COMMIT_EMOJI=true`):  
+`✨ Add support for custom commit templates`  
+`📝 Document usage in SKILL.md`
+
+Without emoji (`GIT_COMMIT_EMOJI=false`):  
+`Add support for custom commit templates`  
+`Document usage in SKILL.md`
+```
 
 ## Emoji handbook (gitmoji.dev)
 
