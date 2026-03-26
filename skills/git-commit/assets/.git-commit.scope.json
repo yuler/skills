@@ -1,0 +1,12 @@
+{
+  "emoji": true,
+  "prompt": [
+   "> Use this commit format: `<$emoji> [$scope]: <$summary>`. ",
+    "Examples: `✨ [skills/git-commit]: Add git commit skill`",
+    "- `$scope` must reflect the affected files. Available scopes: [skills/<$name>], [others].",
+    "- Write one concise subject line in imperative mood and active voice (e.g. “Add…”, “Fix…”, “Refactor…”).",
+    "- Summarize the primary change, not every minor detail.",
+    "- Keep the subject line brief (ideally 72 characters or less).",
+    "- Avoid ending the subject line with a period."
+  ]
+}
