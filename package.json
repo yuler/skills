@@ -4,7 +4,7 @@
   "private": true,
   "description": "Agent skills for my daily use.",
   "scripts": {
-    "commit": "git add --all && opencode run /git-commit",
+    "commit": "opencode run /git-commit",
     "install:global": "npx skills add -g ./skills"
   },
   "devDependencies": {
