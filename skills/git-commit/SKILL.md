@@ -73,11 +73,9 @@ Format details:
    - Prefer a HEREDOC-backed command so single-line and multi-line messages both work cleanly:
 
 ```bash
-git commit -m "$(cat <<'EOF'
+git commit -F - <<'EOF'
 📝 Update commit message guidance
-
 EOF
-)"
 ```
 
 5. Report the result.
