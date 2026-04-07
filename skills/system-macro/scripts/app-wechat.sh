@@ -171,7 +171,9 @@ send() {
     fi
 
     if [[ -n "$MESSAGE" ]]; then
-        platform_send_text "$MESSAGE"
+        # Normalize escaped newlines once in shared flow for all platforms.
+        local normalized_message="${MESSAGE//\\n/$'\n'}"
+        platform_send_text "$normalized_message"
     fi
 }
 
