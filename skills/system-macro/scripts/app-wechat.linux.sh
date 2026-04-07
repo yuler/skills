@@ -12,6 +12,9 @@ platform_send_text() {
         return
     fi
 
+    # Process escaped newlines to actual newlines
+    text="${text//\\n/$'\n'}"
+
     if command_exists xclip; then
         echo -n "$text" | xclip -selection clipboard
     elif command_exists xsel; then

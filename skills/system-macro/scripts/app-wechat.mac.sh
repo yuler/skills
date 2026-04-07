@@ -84,6 +84,8 @@ APPLESCRIPT
 
 platform_send_text() {
     local text="$1"
+    # Process escaped newlines to actual newlines
+    text="${text//\\n/$'\n'}"
     osascript - "$text" <<'APPLESCRIPT' >/dev/null
 on run argv
     set messageText to item 1 of argv
