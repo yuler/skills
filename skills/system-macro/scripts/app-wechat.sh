@@ -162,8 +162,10 @@ send() {
 
     platform_focus_wechat
 
-    # Keep the same behavior: first focus "File Transfer", then locate target.
-    platform_search_chat "weixin"
+    # Hack (Linux only): switch to the "weixin" channel first so the cursor is not lost when opening a duplicate-named channel.
+    if [[ "$OS" == Linux ]]; then
+        platform_search_chat "weixin"
+    fi
     platform_search_chat "$RECEIVER_NAME"
 
     if [[ -n "$FILE" ]]; then
