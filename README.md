@@ -17,6 +17,7 @@ npx skills add yuler/skills
 | gh-pr-create           | Create  GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
 | gh-pr-metadata-refresh | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`   |
 | gh-pr-review-resolver  | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub     |
+| local-voice            | Generates speech locally with OmniVoice via explore-tts. Supports voice cloning, voice design, and offline synthesis. |
 
 ## Refs
 
