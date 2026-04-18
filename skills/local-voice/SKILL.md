@@ -1,6 +1,6 @@
 ---
 name: local-voice
-description: Generates speech locally with OmniVoice via explore-tts omni-voice-cli.sh. Defaults to voice cloning from yuler.sample.wav unless the user specifies random voice, another reference, or voice design. Use when the user wants TTS, WAV output, voice cloning, or offline/local voice synthesis instead of cloud APIs.
+description: Generates speech locally with OmniVoice via explore-tts. Supports voice cloning, voice design, and offline synthesis. Use for local TTS and WAV output.
 ---
 
 # Local voice (explore-tts)
@@ -11,9 +11,9 @@ Use this skill whenever speech must be **generated on the machine** using the **
 
 ## Default mode (no special instruction)
 
-**Use voice cloning** with the fixed reference clip:
+**Use voice cloning** with a **default reference clip** the user keeps on disk (substitute the real path for the placeholder):
 
-`--ref-audio "./yuler.sample.wav"`
+`--ref-audio "<PATH_TO_REFERENCE_AUDIO>"`
 
 Unless the user clearly asks for something else (random voice, a different `--ref-audio`, or `--instruct` voice design), **always** pass this flag.
 
@@ -21,15 +21,16 @@ Unless the user clearly asks for something else (random voice, a different `--re
 
 1. **Working directory**: `cd` to the explore-tts project root:
 
-   `/Users/yule/Explore/explore-tts`
+   `<PATH_TO_EXPLORE_TTS>`
 
 2. **Run the CLI** from that directory. **Typical invocation (default clone):**
 
    ```bash
-   ./omni-voice-cli.sh --text '…' --output './dist/output.wav' --ref-audio "./yuler.sample.wav"
+   mkdir -p ./dist
+   ./omni-voice-cli.sh --text '…' --output './dist/output.wav' --ref-audio "<PATH_TO_REFERENCE_AUDIO>"
    ```
 
-3. **Ensure output path exists** if needed (e.g. create `./dist` before writing there).
+3. **Ensure the output directory exists** when it is not `./dist` or when skipping `mkdir` in a one-off command.
 
 ## CLI options (`omni-voice-cli.sh`)
 
@@ -60,7 +61,7 @@ Combine flags as needed: cloning uses `--ref-audio` (and optionally `--ref-text`
 
 | Mode | When | Flags |
 |------|------|--------|
-| Clone (default) | No special TTS instruction | `--ref-audio "./yuler.sample.wav"` (optional `--ref-text` if user supplies transcript) |
+| Clone (default) | No special TTS instruction | `--ref-audio "<PATH_TO_REFERENCE_AUDIO>"` (optional `--ref-text` if user supplies transcript) |
 | Random voice | User wants default/random voice, no cloning | `--text` and `--output` only |
 | Custom clone | User names another reference file | `--ref-audio PATH` (and `--ref-text` if needed) |
 | Voice design | User wants described voice | `--instruct '…'` and `--language LANG` (e.g. `English`) |
@@ -69,38 +70,42 @@ For defaults and semantics of each flag, see **CLI options** above.
 
 ## Examples
 
-**Default (clone from yuler.sample.wav):**
+**Default (clone from reference audio):**
 
 ```bash
-cd /Users/yule/Explore/explore-tts
-./omni-voice-cli.sh --text "Hello, this is a test." --output "./dist/output-1.wav" --ref-audio "./yuler.sample.wav"
+cd <PATH_TO_EXPLORE_TTS>
+mkdir -p ./dist
+./omni-voice-cli.sh --text "Hello, this is a test." --output "./dist/output-1.wav" --ref-audio "<PATH_TO_REFERENCE_AUDIO>"
 ```
 
 **Long text (heredoc; still default clone):**
 
 ```bash
-cd /Users/yule/Explore/explore-tts
+cd <PATH_TO_EXPLORE_TTS>
+mkdir -p ./dist
 TEXT=$(cat <<'EOF'
 Your multi-line script here.
 EOF
 )
-./omni-voice-cli.sh --text "$TEXT" --output "./dist/output-1.wav" --ref-audio "./yuler.sample.wav"
+./omni-voice-cli.sh --text "$TEXT" --output "./dist/output-1.wav" --ref-audio "<PATH_TO_REFERENCE_AUDIO>"
 ```
 
 **Random voice (user explicitly does not want cloning):**
 
 ```bash
-cd /Users/yule/Explore/explore-tts
+cd <PATH_TO_EXPLORE_TTS>
+mkdir -p ./dist
 ./omni-voice-cli.sh --text "Hello, this is a test." --output "./dist/output-1.wav"
 ```
 
 **Voice design:**
 
 ```bash
-cd /Users/yule/Explore/explore-tts
+cd <PATH_TO_EXPLORE_TTS>
+mkdir -p ./dist
 ./omni-voice-cli.sh --text 'Hello' --instruct 'male, british' --language English --output "./dist/design.wav"
 ```
 
 ## Reference
 
-For project-specific notes and samples, read `/Users/yule/Explore/explore-tts/README.md` when details differ from this skill.
+For project-specific notes and samples, read `<PATH_TO_EXPLORE_TTS>/README.md` when details differ from this skill.
