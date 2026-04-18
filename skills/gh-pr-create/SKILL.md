@@ -7,9 +7,9 @@ description: Creates a new GitHub pull request with `gh pr create` using title a
 
 ## Purpose
 
-Use this skill to open a **new** pull request whose title and body are derived from the current branch. The body follows [gh-pr-metadata-refresh](../gh-pr-metadata-refresh/SKILL.md) structure; the title is a single plain sentence rolled up from every commit in the range.
+Use this skill to open a **new** pull request whose title and body are derived from the current branch. The body follows [gh-pr-summary](../gh-pr-summary/SKILL.md#output-shape) structure; the title is a single plain sentence rolled up from every commit in the range.
 
-If a PR for this branch already exists, prefer refreshing it with `gh pr edit` and the **gh-pr-metadata-refresh** skill instead.
+If a PR for this branch already exists, prefer refreshing it with `gh pr edit` and the **gh-pr-summary** skill instead.
 
 ## Workflow
 
@@ -22,7 +22,7 @@ If a PR for this branch already exists, prefer refreshing it with `gh pr edit` a
 
 2. **Preconditions**
    - Confirm the head branch is pushed to `origin` (or the remote the user uses with `gh`).
-   - Check for an existing PR: `gh pr list --head "$(git branch --show-current)"`. If one exists, stop and recommend **gh-pr-metadata-refresh** unless the user explicitly wants a second PR (unusual).
+   - Check for an existing PR: `gh pr list --head "$(git branch --show-current)"`. If one exists, stop and recommend **gh-pr-summary** unless the user explicitly wants a second PR (unusual).
 
 3. **Choose base branch**
    - Default to the repo default branch (`main` or `master`) unless the user names another base.
@@ -41,7 +41,7 @@ If a PR for this branch already exists, prefer refreshing it with `gh pr edit` a
    - Prefer to keep the title short; GitHub tolerates longer lines but aim for clarity over length.
 
 6. **Derive the body**
-   - Same structure as **gh-pr-metadata-refresh**: `## Summary` bullets, then `## Test plan`.
+   - Same structure as **gh-pr-summary**: `## Summary` bullets, then `## Test plan`.
    - Base content on the branch, not generic filler.
    - Do not invent tests; if unknown, use a clear placeholder in **Test plan**.
 
@@ -54,7 +54,7 @@ If a PR for this branch already exists, prefer refreshing it with `gh pr edit` a
 
 - Prefer `gh pr create`, `gh pr list`, `git log`, and `git diff` for context.
 - Never open a PR with `main` or `master` as head; branch off first with a change-derived slug, then push.
-- Title is one sentence summarizing all commits, preserving commit emoji when present; body rules follow **gh-pr-metadata-refresh**.
+- Title is one sentence summarizing all commits, preserving commit emoji when present; body rules follow **gh-pr-summary**.
 - Do not use **git-commit**’s staged-diff script as the sole source for PR scope (it is index-only).
 
 ## Output shape (body)

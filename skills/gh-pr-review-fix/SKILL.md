@@ -1,9 +1,9 @@
 ---
-name: gh-pr-review-resolver
+name: gh-pr-review-fix
 description: Reads GitHub PR review feedback (inline threads, AI assistants such as Gemini, bots, or humans), implements justified changes, replies on each thread with a short technical note, and resolves conversations. Use when the user wants to address PR review comments, clear review threads, or work through suggestions on an open pull request.
 ---
 
-# GitHub PR Review Resolver
+# gh-pr-review-fix
 
 ## Goal
 
@@ -25,7 +25,7 @@ Turn open review feedback into concrete code changes, then close the loop on Git
 Copy and track progress:
 
 ```
-PR review resolution:
+PR review fixes:
 - [ ] Identify PR number and base branch; ensure local branch matches the PR
 - [ ] List unresolved review threads and top-level review comments
 - [ ] For each item: understand → verify → implement or decline with reason
