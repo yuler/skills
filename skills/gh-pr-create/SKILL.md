@@ -7,7 +7,7 @@ description: Creates a new GitHub pull request with `gh pr create` using title a
 
 ## Purpose
 
-Use this skill to open a **new** pull request whose title and body are derived from the current branch. The body follows [gh-pr-summary](../gh-pr-summary/SKILL.md) structure; the title is a single plain sentence rolled up from every commit in the range.
+Use this skill to open a **new** pull request whose title and body are derived from the current branch. The body follows [gh-pr-summary](../gh-pr-summary/SKILL.md#output-shape) structure; the title is a single plain sentence rolled up from every commit in the range.
 
 If a PR for this branch already exists, prefer refreshing it with `gh pr edit` and the **gh-pr-summary** skill instead.
 
