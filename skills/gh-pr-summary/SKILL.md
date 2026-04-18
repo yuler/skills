@@ -1,9 +1,9 @@
 ---
-name: gh-pr-metadata-refresh
-description: Refreshes GitHub pull request metadata (title and description/body) from the branch’s commits and diff, then applies updates with `gh pr edit`. Use when the user asks to refresh, rewrite, regenerate, or sync PR title or PR body with the branch, or when working with `gh pr`.
+name: gh-pr-summary
+description: Refreshes GitHub pull request title and description (summary body) from the branch’s commits and diff, then applies updates with `gh pr edit`. Use when the user asks to refresh, rewrite, regenerate, or sync PR title or PR body with the branch, or when working with `gh pr`.
 ---
 
-# gh-pr-metadata-refresh
+# gh-pr-summary
 
 ## Purpose
 

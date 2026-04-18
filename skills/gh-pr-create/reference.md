@@ -19,7 +19,7 @@ git push -u origin HEAD   # if upstream missing
 gh pr list --head "$(git branch --show-current)"
 ```
 
-If `gh pr list` shows a PR, use **gh-pr-metadata-refresh** to update it instead of creating another.
+If `gh pr list` shows a PR, use **gh-pr-summary** to update it instead of creating another.
 
 ## Gather branch context
 
@@ -62,7 +62,7 @@ EOF
 
 ## Body guidance
 
-Same as **gh-pr-metadata-refresh**: compact reviewer aid, `## Summary` then `## Test plan`. Replace the default test line with real checks when the branch clearly includes verification.
+Same as **gh-pr-summary**: compact reviewer aid, `## Summary` then `## Test plan`. Replace the default test line with real checks when the branch clearly includes verification.
 
 ## Decision order when generating copy
 

@@ -15,8 +15,8 @@ npx skills add yuler/skills
 | git-commit             | Generates human-readable commit messages with leading emoji by analyzing git diff                    |
 | gh-pages               | Deploy a repository to GitHub Pages from `main` and guide required GitHub Settings setup             |
 | gh-pr-create           | Create  GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
-| gh-pr-metadata-refresh | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`   |
-| gh-pr-review-resolver  | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub     |
+| gh-pr-summary          | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`   |
+| gh-pr-review-fix       | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub     |
 
 ## Refs
 
