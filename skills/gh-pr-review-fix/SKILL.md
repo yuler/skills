@@ -25,7 +25,7 @@ Turn open review feedback into concrete code changes, then close the loop on Git
 Copy and track progress:
 
 ```
-PR review resolution:
+PR review fixes:
 - [ ] Identify PR number and base branch; ensure local branch matches the PR
 - [ ] List unresolved review threads and top-level review comments
 - [ ] For each item: understand → verify → implement or decline with reason

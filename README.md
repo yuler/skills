@@ -14,7 +14,7 @@ npx skills add yuler/skills
 | crawl-x                | Extract tweet/post text and X Article content from X/Twitter status URLs into Markdown               |
 | git-commit             | Generates human-readable commit messages with leading emoji by analyzing git diff                    |
 | gh-pages               | Deploy a repository to GitHub Pages from `main` and guide required GitHub Settings setup             |
-| gh-pr-create           | Create  GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
+| gh-pr-create           | Create GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
 | gh-pr-summary          | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`   |
 | gh-pr-review-fix       | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub     |
 
