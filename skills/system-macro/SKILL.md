@@ -29,7 +29,8 @@ scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
 
 ## Platform Requirements
 
-- Linux: `xdotool`, `wmctrl`, and clipboard support via `xclip` or `xsel`
+- Omarchy (Hyprland): `wl-copy`, `hyprctl`, `xdg-open`, `omarchy-launch-or-focus`, and `xdotool` (WeChat is XWayland; `wtype` cannot inject keys into it). Optional: `gum` for confirm
+- Other Linux (X11): `xdotool`, `wmctrl`, and clipboard support via `xclip` or `xsel`
 - macOS: `osascript` (built-in)
 
 ## Behavior
@@ -37,14 +38,15 @@ scripts/app-wechat.sh -r "<receiver>" -m "<message>" -f "<file-path>"
 - If the message is **longer than 500 words**, the script writes the content to a temporary file and **sends the file** instead of pasting text.
 - Otherwise, it sends a trimmed text message.
 - If `-f` is provided, the file is sent before the text message.
-- The dispatcher auto-detects Linux vs macOS.
+- The dispatcher auto-detects Omarchy vs other Linux vs macOS.
 - By default, a confirmation dialog appears before sending.
 - Use `-c` or `--with-confirm-dialog` to show the confirmation dialog.
 
 ## Platform Scripts
 
-- Linux: `scripts/app-wechat.linux.sh` …
-- macOS: `scripts/app-wechat.mac.sh` …
+- Omarchy: `scripts/app-wechat.omarchy.sh`
+- Other Linux: `scripts/app-wechat.linux.sh`
+- macOS: `scripts/app-wechat.mac.sh`
 
 ## Arguments
 

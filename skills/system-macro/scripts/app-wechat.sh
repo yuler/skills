@@ -34,11 +34,20 @@ version() {
     echo "$(basename "$0") 0.1.0"
 }
 
+is_omarchy() {
+    command -v omarchy >/dev/null 2>&1
+}
+
 load_platform_script() {
     case "$OS" in
         Linux)
-            # shellcheck source=/dev/null
-            . "$SCRIPT_DIR/app-wechat.linux.sh"
+            if is_omarchy; then
+                # shellcheck source=/dev/null
+                . "$SCRIPT_DIR/app-wechat.omarchy.sh"
+            else
+                # shellcheck source=/dev/null
+                . "$SCRIPT_DIR/app-wechat.linux.sh"
+            fi
             ;;
         Darwin)
             # shellcheck source=/dev/null
