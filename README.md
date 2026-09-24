@@ -8,16 +8,17 @@ npx skills add yuler/skills
 
 ## Skills
 
-| Skill Name             | Description                                                                                          |
-|------------------------|------------------------------------------------------------------------------------------------------|
-| system-macro           | Automate desktop operations via keyboard/mouse simulation and macros (Linux/macOS)                   |
-| crawl-x                | Extract tweet/post text and X Article content from X/Twitter status URLs into Markdown               |
-| x-compose-draft        | Draft an X post and open compose in the default browser with pre-filled text; wait for user to post |
-| git-commit             | Generates human-readable commit messages with leading emoji by analyzing git diff                    |
-| gh-pages               | Deploy a repository to GitHub Pages from `main` and guide required GitHub Settings setup             |
-| gh-pr-create           | Create GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
-| gh-pr-summary          | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`   |
-| gh-pr-review-fix       | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub     |
+| Skill Name                     | Description                                                                                         |
+|--------------------------------|-----------------------------------------------------------------------------------------------------|
+| system-macro                   | Automate desktop operations via keyboard/mouse simulation and macros (Linux/macOS)                  |
+| crawl-x                        | Extract tweet/post text and X Article content from X/Twitter status URLs into Markdown              |
+| x-compose-draft                | Draft an X post and open compose in the default browser with pre-filled text; wait for user to post |
+| git-commit                     | Generates human-readable commit messages with leading emoji by analyzing git diff                   |
+| gh-pages                       | Deploy a repository to GitHub Pages from `main` and guide required GitHub Settings setup            |
+| gh-pr-create                   | Create GitHub PR title and description from branch commits and diff, then apply with `gh pr create` |
+| gh-pr-summary                  | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`  |
+| gh-pr-review-fix               | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub    |
+| opencode-name-untitled-session | Rename opencode sessions stuck with the default time-format title to content-based titles           |
 
 ## Refs
 
