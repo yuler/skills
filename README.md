@@ -10,6 +10,7 @@ npx skills add yuler/skills
 
 | Skill Name                     | Description                                                                                         |
 |--------------------------------|-----------------------------------------------------------------------------------------------------|
+| grill-me-to-issue              | Call Matt Pocock's /grill-me, then file a GitHub issue labeled grill-me and spec                    |
 | system-macro                   | Automate desktop operations via keyboard/mouse simulation and macros (Linux/macOS)                  |
 | crawl-x                        | Extract tweet/post text and X Article content from X/Twitter status URLs into Markdown              |
 | x-compose-draft                | Draft an X post and open compose in the default browser with pre-filled text; wait for user to post |
