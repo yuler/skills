@@ -15,8 +15,8 @@ Dates are the user's local calendar day in Asia/Shanghai. Default target is toda
 ```markdown
 # 2026-10-16
 
-- 01: [ ] 调研 REA https://github.com/morluto/rea
-- 02: [x] 整理 todos 文件夹
+- [ ] 01: 调研 REA https://github.com/morluto/rea
+- [x] 02: 整理 todos 文件夹
 
 ---
 
@@ -25,13 +25,13 @@ Dates are the user's local calendar day in Asia/Shanghai. Default target is toda
 - 02: 收进 brain，之后按天记
 ```
 
-A checklist line is `- NN: [ ] short title`, with an optional link at the end. A record line is `- NN: one sentence`. The same `NN` ties them. Numbers run `01`–`99`. A number already in the file stays on that task when lines are removed or reordered. The next task takes the highest `NN` plus one. A new file starts at `01`.
+A checklist line is `- [ ] NN: short title`, with an optional link at the end. A record line is `- NN: one sentence`. The same `NN` ties them. Numbers run `01`–`99`. A number already in the file stays on that task when lines are removed or reordered. The next task takes the highest `NN` plus one. A new file starts at `01`.
 
 ## Assign
 
 Each non-empty input line is one task. Commas and `、` stay inside the title. When the input is a single line and the tasks are not already one per line, ask for one task per line and write nothing. Repeated titles in the same input are added once.
 
-Create `.todos/` when it is missing. Read the day's file when it exists. Append each new task as `- NN: [ ] title` on the checklist, above `---` when a record section exists. A title that already appears on a checklist line, checked or not, is skipped. Leave every existing line as it is, including checks, record lines, and linked files.
+Create `.todos/` when it is missing. Read the day's file when it exists. Append each new task as `- [ ] NN: title` on the checklist, above `---` when a record section exists. A title that already appears on a checklist line, checked or not, is skipped. Leave every existing line as it is, including checks, record lines, and linked files.
 
 Done when the new lines are on disk and you have told the user the date, whether the file was created or extended, the lines added, and any titles skipped.
 
