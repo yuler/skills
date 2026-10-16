@@ -15,17 +15,17 @@ Dates are the user's local calendar day in Asia/Shanghai. Default target is toda
 ```markdown
 # 2026-10-16
 
-- [ ] 01: 调研 REA https://github.com/morluto/rea
-- [x] 02: 整理 todos 文件夹
+- [ ] 01: Look into REA https://github.com/morluto/rea
+- [x] 02: Organize the todos folder
 
 ---
 
-## 记录
+## Notes
 
-- 02: 收进 brain，之后按天记
+- 02: Moved it into brain and kept one file per day
 ```
 
-A checklist line is `- [ ] NN: short title`, with an optional link at the end. A record line is `- NN: one sentence`. The same `NN` ties them. Numbers run `01`–`99`. A number already in the file stays on that task when lines are removed or reordered. The next task takes the highest `NN` plus one. A new file starts at `01`.
+A checklist line is `- [ ] NN: short title`, with an optional link at the end. A note line is `- NN:` followed by the note. The same `NN` ties them. Numbers run `01`–`99`. A number already in the file stays on that task when lines are removed or reordered. The next task takes the highest `NN` plus one. A new file starts at `01`.
 
 ## Assign
 
@@ -39,11 +39,13 @@ Done when the new lines are on disk and you have told the user the date, whether
 
 Mark `[x]` in the same edit that writes the record line `- NN: ...`. The record line says what got done. An unfinished task stays `[ ]`, and its record line says why.
 
-Write the record under `## 记录`. Create the `---` and `## 记录` heading with the first record. Until then the file is only the checklist.
+Write the note under `## Notes`. Create the `---` and `## Notes` heading with the first note. Until then the file is only the checklist.
 
-A record is one line. When the note is longer than one line, write `.todos/YYYY-MM-DD/NN.md` and put a Markdown link to it on that line. When the repo already has the note, link that file. The day's checklist stays one file.
+Keep the note in the day's file, even when it runs past one line. The day's checklist stays one file.
 
-Done when the checkbox and the matching record line agree, and any longer note is a separate file the record line links.
+A long note can live beside the day file as `.todos/YYYY-MM-DD.NN.md`, linked from the note line. That file is for a note longer than one screen, at least 100 characters. Leave the split to the user. When you are reading and a note is already that long, suggest the `.todos/YYYY-MM-DD.NN.md` name and wait. When the repo already has the note, suggest linking that file.
+
+Done when the checkbox and the matching note line agree, and any split suggestion names the `.NN.md` file without creating it.
 
 ## Next day
 
