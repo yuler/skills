@@ -1,107 +1,56 @@
 ---
 name: daily-todos
-description: Generate a daily to-do list from freeform text for today, tomorrow, or a given date. Parse tasks and append them to a Markdown checklist in .todos/, and carry over unfinished tasks to the next day.
+description: Use when the user assigns a daily to-do for today, tomorrow, or a given date, carries unfinished tasks into a new day, or records a completion or remark in `.todos/`.
 ---
 
-# Daily To-Do List Generator
+# Daily todos
 
-Create or extend a day's to-do list from freeform text input, or carry over unfinished tasks to the next day.
+One file per day: `.todos/YYYY-MM-DD.md` in the repo the user named. For the brain vault, that repo is `~/brain`.
 
-## Target date
+Dates are the user's local calendar day in Asia/Shanghai. Default target is today. `tomorrow` / `明天` is the next local day. An explicit `YYYY-MM-DD` is used after it validates; an invalid date is a question, and nothing is written.
 
-- Default: **today**
-- Also accepted: `tomorrow` / `明天` (plan the night before), or an explicit `YYYY-MM-DD`
-- Always use the user's local date (Asia/Shanghai), not UTC:
-  - Today: `TZ=Asia/Shanghai date +%F`
-  - Tomorrow: `TZ=Asia/Shanghai date -d tomorrow +%F`
-- Validate explicit dates; if invalid, ask the user to correct it
+- Today: `TZ=Asia/Shanghai date +%F`
+- Tomorrow: `TZ=Asia/Shanghai date -d tomorrow +%F`
 
-## Your task
+```markdown
+# 2026-10-16
 
-The user will provide a text description of their tasks (optionally with a target date). Your job is to:
+- 01: [ ] 调研 REA https://github.com/morluto/rea
+- 02: [x] 整理 todos 文件夹
 
-1. **Resolve** the target date (see above)
+---
 
-2. **Parse** the input text to extract individual tasks
-   - Split by common delimiters (commas, semicolons, newlines, Chinese punctuation like `、`)
-   - Keep each task concise and actionable
-   - Strip extra whitespace
+## 记录
 
-3. **Write** the Markdown file:
-   - Filename: `.todos/YYYY-MM-DD.md` (target date in ISO format)
-   - Content: A `# YYYY-MM-DD` header followed by a checklist
-   - Format: Each task as `- [ ] Task description`
-   - If the file **does not exist**, create it with the header and tasks
-   - If the file **already exists**, append the new tasks to the end of the checklist; never overwrite
-     - Skip duplicates: a task is a duplicate if its text (trimmed) matches an existing item, whether `- [ ]` or `- [x]`
-     - Keep existing items, their order, and their `[x]` states unchanged
-
-4. **Save** the file to `.todos/` (create the directory if needed)
-
-5. **Report** the result to the user:
-   - Show the target date and whether the file was created or appended to
-   - List tasks added and any skipped as duplicates
-   - Be encouraging and brief
-
-## Carry over
-
-When the user asks to carry over (e.g. "carry over", "顺延", "把没做完的挪到明天"):
-
-1. Source: today's file `.todos/<today>.md`; target: the next day `.todos/<today+1>.md` (dates in Asia/Shanghai)
-2. Collect every unchecked `- [ ]` item from the source; ignore `- [x]` items
-3. If the target file doesn't exist, create it with the `# YYYY-MM-DD` header
-4. Append the items to the target, skipping duplicates (same rule as above); keep existing target items and `[x]` states
-5. Leave the source file unchanged
-6. Report how many items were carried over and how many were skipped; if there are none (or no source file), say so
-
-## Examples
-
-User input: `"开会、写代码、复查PR、修复auth bug"`
-
-Generate file `.todos/2024-01-15.md`:
-```
-# 2024-01-15
-
-- [ ] 开会
-- [ ] 写代码
-- [ ] 复查PR
-- [ ] 修复auth bug
+- 02: 收进 brain，之后按天记
 ```
 
-Later, user input: `"写代码、发周报"` when `写代码` is already done:
-```
-# 2024-01-15
+A checklist line is `- NN: [ ] short title`, with an optional link at the end. A record line is `- NN: one sentence`. The same `NN` ties them. Numbers run `01`–`99`. A number already in the file stays on that task when lines are removed or reordered. The next task takes the highest `NN` plus one. A new file starts at `01`.
 
-- [ ] 开会
-- [x] 写代码
-- [ ] 复查PR
-- [ ] 修复auth bug
-- [ ] 发周报
-```
-(`写代码` skipped as duplicate, `[x]` kept.)
+## Assign
 
-User input: `"carry over"` on 2024-01-15 → `.todos/2024-01-16.md`:
-```
-# 2024-01-16
+Each non-empty input line is one task. Commas and `、` stay inside the title. When the input is a single line and the tasks are not already one per line, ask for one task per line and write nothing. Repeated titles in the same input are added once.
 
-- [ ] 开会
-- [ ] 复查PR
-- [ ] 修复auth bug
-- [ ] 发周报
-```
+Create `.todos/` when it is missing. Read the day's file when it exists. Append each new task as `- NN: [ ] title` on the checklist, above `---` when a record section exists. A title that already appears on a checklist line, checked or not, is skipped. Leave every existing line as it is, including checks, record lines, and linked files.
 
-## Important rules
+Done when the new lines are on disk and you have told the user the date, whether the file was created or extended, the lines added, and any titles skipped.
 
-- If no tasks can be extracted, fail gracefully and ask the user to provide clearer input
-- If `.todos/` doesn't exist, create it
-- Never overwrite an existing day's file: append and skip duplicates, preserving `[x]` states
-- All tasks go into ONE file per day, not separate files
-- Keep task descriptions short (one sentence each)
-- Dates are the user's local date (Asia/Shanghai)
+## Record
 
-## Handling edge cases
+Mark `[x]` in the same edit that writes the record line `- NN: ...`. The record line says what got done. An unfinished task stays `[ ]`, and its record line says why.
 
-- **Empty input**: Politely ask for a valid task description
-- **Very long input**: Still parse all of it, don't truncate
-- **Special characters**: Keep them (they help with localization)
-- **Duplicates within the input**: Add each task only once
+Write the record under `## 记录`. Create the `---` and `## 记录` heading with the first record. Until then the file is only the checklist.
+
+A record is one line. When the note is longer than one line, write `.todos/YYYY-MM-DD/NN.md` and put a Markdown link to it on that line. When the repo already has the note, link that file. The day's checklist stays one file.
+
+Done when the checkbox and the matching record line agree, and any longer note is a separate file the record line links.
+
+## Next day
+
+When the user asks to carry unfinished tasks forward, copy each still-open task's short title and trailing link from the source day into the target day's checklist. Number the copied lines from the target's next `NN` (a new file starts at `01`). Skip titles the target already has. The source file, its records, and its linked files stay where they are.
+
+Done when you have reported how many lines were copied and how many titles were skipped. When the source file is missing or has no open tasks, say so and write nothing.
+
+## Ask first
+
+Ask, and write nothing, when the input is empty, when no line is a task, when the date is invalid, or when the named number is not in the file.
