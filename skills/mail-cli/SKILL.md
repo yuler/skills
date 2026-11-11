@@ -2,27 +2,47 @@
 name: mail-cli
 description: >-
   Send and read mail with the local Himalaya CLI. Use when the user wants to
-  send or read email, check an inbox, or grab a signup or verification message
-  from a configured Himalaya account.
+  send or read email, check an inbox, grab a signup or verification message,
+  or set up a Gmail account for Himalaya.
 ---
 
 # mail-cli
 
-Send and read mail with the local `himalaya` CLI. Bound accounts stay in the Himalaya config, not in this skill.
+Send and read mail with the local `himalaya` CLI. Account addresses and app passwords stay on the machine, not in this skill.
 
 ## Setup
 
-Before the first read or send in a session, confirm the CLI and the login:
+Install the password helper once:
 
 ```bash
-command -v himalaya
+scripts/setup.sh
+```
+
+That copies `scripts/himalaya-gmail-secret` to `~/.local/bin/himalaya-gmail-secret`. When an account is already configured, stop. Do not rewrite or remove it.
+
+When there is no account, ask for the Gmail address, then tell the user to run `himalaya configure` and use these answers:
+
+| Prompt | Answer |
+| --- | --- |
+| Email | the Gmail address |
+| Choose a configuration | `IMAP + SMTP imap.gmail.com` |
+| SASL mechanism | `PLAIN (username + password)` |
+| Login | the same Gmail address |
+| Password strategy | `Custom shell command` |
+| Password shell command | `himalaya-gmail-secret` |
+| Use the same credentials for SMTP? | Yes |
+| Save this account to `~/.config/himalaya/config.toml`? | Yes |
+
+Then tell the user to write the Google app password to `~/.config/himalaya/gmail-app-password` (mode 600, the app password only). Create it at https://myaccount.google.com/apppasswords.
+
+Before the first read or send in a session:
+
+```bash
 himalaya account list --json
 himalaya account check
 ```
 
 `account list` is the bound accounts: `name`, `default`, and `backends`. Use the default account. When the user names one, pass `-a <name>`.
-
-When `himalaya` is missing, install it and run the check again. When the list is empty or `account check` is not OK, the account is not logged in. Ask the user to finish login with `himalaya` or `himalaya configure`, then re-run `himalaya account check` until it reports OK. Leave existing accounts in place.
 
 ## Read
 
