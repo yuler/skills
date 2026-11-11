@@ -20,6 +20,7 @@ npx skills add yuler/skills
 | gh-pr-summary                  | Refresh GitHub PR title and description from branch commits and diff, then apply with `gh pr edit`  |
 | gh-pr-review-fix               | Address PR review threads (AI or human): implement fixes, reply, resolve conversations on GitHub    |
 | opencode-name-untitled-session | Rename opencode sessions stuck with the default time-format title to content-based titles           |
+| mail-cli                       | Send and read mail with the local Himalaya CLI after an account-list and login check                |
 
 ## Refs
 
