@@ -15,3 +15,6 @@ dist
 # Envs
 .env
 .env.*.local
+
+# Local-only paths (symlinks, scratch)
+local-*
