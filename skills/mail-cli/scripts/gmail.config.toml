@@ -1,0 +1,20 @@
+display-name = "__NAME__"
+
+[accounts.gmail]
+default = true
+email = "__EMAIL__"
+display-name = "__NAME__"
+
+imap.server = "imaps://imap.gmail.com:993"
+imap.sasl.plain.username = "__EMAIL__"
+imap.sasl.plain.password.command = ["himalaya-gmail-secret"]
+
+smtp.server = "smtps://smtp.gmail.com:465"
+smtp.sasl.plain.username = "__EMAIL__"
+smtp.sasl.plain.password.command = ["himalaya-gmail-secret"]
+
+mailbox.alias.inbox = "INBOX"
+mailbox.alias.sent = "[Gmail]/Sent Mail"
+mailbox.alias.drafts = "[Gmail]/Drafts"
+mailbox.alias.trash = "[Gmail]/Trash"
+mailbox.alias.archive = "[Gmail]/All Mail"

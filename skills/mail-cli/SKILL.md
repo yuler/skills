@@ -12,26 +12,13 @@ Send and read mail with the local `himalaya` CLI. Account addresses and app pass
 
 ## Setup
 
-Install the password helper once:
+Run `scripts/setup.sh` with the Gmail address. It installs `scripts/himalaya-gmail-secret` to `~/.local/bin/himalaya-gmail-secret`, then writes `~/.config/himalaya/config.toml` from `scripts/gmail.config.toml`. Only the address is filled in. IMAP, SMTP, the password command, and the Gmail mailbox aliases stay as they are in the template.
 
 ```bash
-scripts/setup.sh
+scripts/setup.sh name@gmail.com
 ```
 
-That copies `scripts/himalaya-gmail-secret` to `~/.local/bin/himalaya-gmail-secret`. When an account is already configured, stop. Do not rewrite or remove it.
-
-When there is no account, ask for the Gmail address, then tell the user to run `himalaya configure` and use these answers:
-
-| Prompt | Answer |
-| --- | --- |
-| Email | the Gmail address |
-| Choose a configuration | `IMAP + SMTP imap.gmail.com` |
-| SASL mechanism | `PLAIN (username + password)` |
-| Login | the same Gmail address |
-| Password strategy | `Custom shell command` |
-| Password shell command | `himalaya-gmail-secret` |
-| Use the same credentials for SMTP? | Yes |
-| Save this account to `~/.config/himalaya/config.toml`? | Yes |
+When an account is already configured, setup installs the helper and stops. It does not rewrite or remove the account.
 
 Then tell the user to write the Google app password to `~/.config/himalaya/gmail-app-password` (mode 600, the app password only). Create it at https://myaccount.google.com/apppasswords.
 
