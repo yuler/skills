@@ -1,24 +1,20 @@
 ---
 name: gh-pr-review-fix
-description: Reads GitHub PR review feedback (inline threads, AI assistants such as Gemini, bots, or humans), implements justified changes, replies on each thread with a short technical note, and resolves conversations. Use when the user wants to address PR review comments, clear review threads, or work through suggestions on an open pull request.
+description: Reads GitHub PR review feedback (structured top-level reviews with P1/P2/P3 items, inline review threads, human collaborator or AI reviewer comments), verifies claims against the codebase, implements minimal fixes with automated regression tests, replies and resolves threads, and verifies CI checks. Use when addressing PR review comments or closing review feedback loops.
 ---
 
 # gh-pr-review-fix
 
 ## Goal
 
-Turn open review feedback into concrete code changes, then close the loop on GitHub: **reply** on each thread (or the relevant comment) and **resolve** the conversation when the suggestion is fully addressed.
+Turn open GitHub pull request review feedback into verified, regression-tested code changes, close the feedback loop on GitHub (by resolving inline review threads or posting a structured top-level resolution comment with commit SHAs), and verify that all CI status checks pass.
 
 ## Principles
 
-- **Verify before implementing.** Treat AI and human reviewers the same: check the suggestion against the codebase; push back in the reply if it is wrong or out of scope. Prefer technical reasoning over empty agreement; if the **receiving-code-review** skill is available, use it before blindly applying feedback.
-- **One thread at a time** when threads depend on each other; batch only when independent.
-- **Resolve only after** the fix is pushed (or explained why not changing), and the reply documents what changed.
-
-## Prerequisites
-
-- Repo is a git checkout with the PR branch checked out (or the user specifies branch/PR).
-- [GitHub CLI](https://cli.github.com/) `gh` installed and authenticated: `gh auth status`.
+- **Verify before implementing**: Treat all reviewers (human collaborators or AI reviewers) with the same engineering rigor. Check every suggestion against codebase facts, architecture, and invariants. Do not blindly adopt suggestions that break contracts or hallucinate APIs; push back factually in the reply when feedback is invalid or out of scope.
+- **Lock in regression tests**: Any bug or edge case reported in review must be backed by automated test coverage before considering it resolved.
+- **Respect repository workflow rules**: Check the repository for developer guidelines (`AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`). Respect git worktree requirements, branch naming, commit message conventions (e.g., `emoji [scope] description`), trailer restrictions, and file size limits.
+- **Close the loop**: Commit, push to the PR branch, reply with concise technical notes linking the commit SHA, resolve conversations, and watch CI checks until green.
 
 ## Workflow
 
@@ -26,72 +22,65 @@ Copy and track progress:
 
 ```
 PR review fixes:
-- [ ] Identify PR number and base branch; ensure local branch matches the PR
-- [ ] List unresolved review threads and top-level review comments
-- [ ] For each item: understand → verify → implement or decline with reason
-- [ ] Commit and push
-- [ ] Reply on each addressed thread; resolve conversation
-- [ ] Summarize for the user what was fixed vs declined
+- [ ] 1. Identify PR, head branch, and repository workflow rules (worktree, commit format)
+- [ ] 2. Fetch all review feedback: top-level reviews and unresolved inline threads
+- [ ] 3. Itemize & verify: dissect into concrete issues (P1/P2/P3), map root causes, verify codebase facts
+- [ ] 4. Implement minimal fixes and add automated regression test coverage
+- [ ] 5. Run test suites and linters locally (zero regressions)
+- [ ] 6. Commit and push adhering to repo conventions
+- [ ] 7. Reply on GitHub (inline thread reply + resolution, or top-level PR summary comment)
+- [ ] 8. Monitor CI checks until green (gh pr checks --watch)
+- [ ] 9. Clean up temporary worktree or branch if applicable
 ```
 
-### 1. Identify the PR
+---
+
+### Step 1: Identify the PR & Repository Guidelines
+
+Check PR status and metadata:
 
 ```bash
-gh pr status
-# or
 gh pr view <number> --json number,title,headRefName,baseRefName,url
 ```
 
-Check out the head branch if needed:
+Check repository workflow rules:
+- Inspect `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md` at repo root.
+- **Worktree workflow**: If the repository mandates worktree usage (e.g., `.worktree/<branch>`):
+  ```bash
+  git worktree add .worktree/<branch-name> <headRefName>
+  cd .worktree/<branch-name>
+  ```
+  Otherwise, check out the PR head branch directly:
+  ```bash
+  gh pr checkout <number>
+  ```
+
+---
+
+### Step 2: Fetch Review Feedback
+
+GitHub PR feedback typically comes in two forms: **Top-level structured reviews** and **Inline diff threads**. Fetch both to get the complete picture.
+
+#### 2.1 Top-level Reviews & Conversation Comments
+
+Human collaborators and structured reviewers often submit reviews containing markdown blocks, prioritization (e.g. `### P1`, `### P2`), and high-level architectural feedback:
 
 ```bash
-gh pr checkout <number>
+gh pr view <number> --json reviews,comments
 ```
 
-### 2. List review feedback
-
-**Conversation view (good for humans):**
+For a human-readable thread view in terminal:
 
 ```bash
 gh pr view <number> --comments
 ```
 
-**Structured JSON (scripts / parsing):**
+> [!NOTE]
+> Do NOT use `gh pr view --json reviewThreads`; `reviewThreads` is not a recognized field in `gh pr view` and will throw an error. Use GraphQL below for inline threads.
 
-```bash
-gh pr view <number> --json reviews,comments,reviewThreads
-```
+#### 2.2 Inline Review Threads (GraphQL)
 
-Use `reviewThreads` when available in your `gh` version; it exposes thread state and supports resolving via API. If a field is missing, use GraphQL (below) or the PR **Files changed** tab on the web for inline threads.
-
-### 3. Implement
-
-- Map each comment to files/lines; make minimal, correct edits.
-- Run project tests or linters the repo expects.
-- Commit with a clear message; push to the PR branch.
-
-### 4. Reply and resolve
-
-**Reply to an inline review comment** (REST):
-
-```bash
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies -f body="Brief note: what changed (e.g. extracted helper, added test). Link commit if useful."
-```
-
-`comment_id` must be a **top-level** thread comment, not a reply. List candidates: `gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | {id, in_reply_to_id, path, body}'`.
-
-**Resolve a review thread** (GraphQL):
-
-```bash
-gh api graphql -f query='
-mutation($id: ID!) {
-  resolveReviewThread(input: { threadId: $id }) {
-    thread { isResolved }
-  }
-}' -f id='THREAD_NODE_ID'
-```
-
-Obtain `THREAD_NODE_ID` with:
+To inspect line-by-line unresolved review threads:
 
 ```bash
 gh api graphql -f query='
@@ -99,36 +88,128 @@ query($owner: String!, $repo: String!, $n: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $n) {
       reviewThreads(first: 100) {
-        nodes { id isResolved path line comments(first: 1) { nodes { body author { login } } } }
+        totalCount
+        nodes {
+          id
+          isResolved
+          path
+          line
+          comments(first: 5) {
+            nodes {
+              id
+              body
+              author { login }
+            }
+          }
+        }
       }
     }
   }
 }' -f owner='OWNER' -f repo='REPO' -f n=PR_NUMBER
 ```
 
-Resolve only threads where `isResolved` is false and the work is done.
+Filter for threads where `isResolved == false`.
 
-**If GraphQL is awkward:** reply via REST, then resolve the thread in the GitHub PR UI; still leave the same concise reply text in the skill output for the user to paste if needed.
+---
 
-### 5. Reply text guidelines
+### Step 3: Itemize, Verify & Implement
 
-- **Short and specific:** what you changed, where, or why you did not change it.
-- **No performative praise** of the reviewer; stay factual.
-- **Optional:** `Fixed in <commit-sha>` when one commit maps cleanly to the thread.
+1. **Itemize feedback**: Group issues by priority or concern (e.g., P1 / P2 / P3 or File A / File B).
+2. **Verify against codebase**:
+   - Inspect the cited file ranges and related caller modules.
+   - Determine if the critique is factually correct.
+   - If incorrect or harmful: formulate a factual, polite decline with technical reasoning.
+3. **Implement minimal fix**:
+   - Make precise, localized edits avoiding speculative churn.
+   - Avoid breaking existing tests or contracts.
+4. **Add regression tests**:
+   - Write automated unit/integration tests that specifically exercise the scenario identified by the reviewer.
+5. **Local verification**:
+   - Run the repository's type checks, linters, and test suites (e.g. `nsh check app`, `nsh test app`, `cargo test`, `npm test`, etc.).
+   - Verify that all existing and new tests pass with zero errors.
 
-Example:
+---
 
-> Addressed: moved validation into `parseInput` and added a unit test in `parseInput.test.ts`. Resolving thread.
+### Step 4: Commit & Push
 
-Example (decline):
+- Follow repository commit title conventions (e.g., `emoji [scope] The main change`).
+- Do not include agent trailers (`Co-Authored-By: Claude`, Cursor, etc.) unless requested by the user.
+- Push the commit to the PR head branch:
+  ```bash
+  git push origin <headRefName>
+  ```
 
-> Not adopting: this would duplicate existing error handling in `middleware/errors.ts`. Prefer keeping a single path; happy to adjust if you want a different shape.
+---
 
-## Edge cases
+### Step 5: Reply, Resolve & CI Loop
+
+#### 5.1 When Addressing Inline Review Threads
+
+1. **Reply to the comment** (REST):
+   ```bash
+   gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies -f body="Fixed in <commit-sha>: <short description of fix and regression test>."
+   ```
+   *(Note: `comment_id` must be the top comment of that thread).*
+
+2. **Resolve the thread** (GraphQL):
+   ```bash
+   gh api graphql -f query='
+   mutation($id: ID!) {
+     resolveReviewThread(input: { threadId: $id }) {
+       thread { isResolved }
+     }
+   }' -f id='THREAD_NODE_ID'
+   ```
+
+#### 5.2 When Addressing Top-level / Batch Reviews
+
+If feedback was delivered as a top-level review or batch comment without individual inline thread IDs, post a structured summary comment on the PR:
+
+```bash
+gh pr comment <number> -b "Addressed review feedback in \`<commit-sha>\`:
+
+- **P1 (<Issue Summary>)**: <Root cause> → <What was changed>.
+- **P2 (<Issue Summary>)**: <Root cause> → <What was changed>.
+- **Regression test coverage**: <Summary of new automated test cases added>.
+"
+```
+
+#### 5.3 Monitor CI Checks
+
+Wait for and verify that all CI status checks run and pass on the latest head commit:
+
+```bash
+gh pr checks <number> --watch
+```
+
+Ensure all required checks are green. If any check fails, inspect logs immediately and apply a fix before completing.
+
+#### 5.4 Clean Up Worktree
+
+If a git worktree was created in Step 1, remove it once the branch is pushed:
+
+```bash
+git worktree remove .worktree/<branch-name>
+```
+
+---
+
+## Reply Text Examples
+
+### Adopting a Suggestion
+> Fixed in `4558ae5`: Scoped keyboard actions to frontmost surface when modal is open and added regression tests in `shortcuts.test.tsx`. Resolving thread.
+
+### Declining a Suggestion (with Technical Evidence)
+> Not adopting: `LibraryView` state is preserved deliberately across tab switches to maintain smooth list restoration. Re-mounting would cause thumbnail image reload flicker. Happy to adjust if you have a different transition requirement.
+
+---
+
+## Edge Cases
 
 | Situation | Action |
-|-----------|--------|
-| Suggestion is wrong or harmful | Reply with reasoning; do not resolve unless the thread can be closed by agreement—sometimes leave open for reviewer. |
-| Same issue repeated on multiple lines | One fix; reply on one thread, reference the others, resolve all when your `gh`/GraphQL flow allows. |
-| Outdated diff after push | Re-read thread context on latest commit; reply noting superseded line numbers if needed. |
-| Only top-level review, no inline threads | Reply with a single PR comment summarizing batch fixes: `gh pr comment <number> -b "..."`. |
+| :--- | :--- |
+| Suggestion is factually invalid | Reply explaining the technical contradiction or architecture constraint. Do not resolve unless agreed. |
+| Duplicate feedback across multiple lines | Fix once; reply on the primary comment referencing the fix commit, and resolve related threads. |
+| Top-level review with no inline threads | Reply with a structured batch comment via `gh pr comment <number> -b "..."`. |
+| PR head branch is out of date with `main` | Check if repo prefers rebase or merge; test merge tree before pushing. |
+| Local worktree required by repo | Always work within `.worktree/` and remove immediately after pushing. |
